@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.updateTitleFile {
+    font-size: 40px;
+}
+
+.centerUpdateFile {
+    padding: 10px;
+}
+
+.updateFile {
+    background-color: rgb(210, 211, 211);
+}
+
+.tablaUpdateFile {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin-top: 40px;
+}
+
+.inputsUpdateFile {
+    margin-top: 10vh;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: rgb(241, 231, 231);
+    width: 600px;
+    padding: 20px;
+}
+
+.reqUpdateFile {
+    font-size: 25px;
+}
+
+.updateFileName {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateFileDescription {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateFileDate {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateButtonsFile {
+    width: 100%;
+    margin-top: 16vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .updateTitleFile {
+        font-size: 20px;
+    }
+
+    .centerUpdateFile {
+        padding: 5px;
+    }
+
+    .tablaUpdateFile {
+        border: 1px solid black;
+        border-radius: 5px;
+        max-width: 250px;
+        margin-top: 0px;
+    }
+
+
+    .reqUpdateFile {
+        font-size: 14px;
+    }
+
+
+    .inputsUpdateFile {
+        margin-top: 4vh;
+        padding: 5px;
+        border: 1px solid black;
+        border-radius: 5px;
+        width: auto;
+    }
+
+    .updateButtonsFile {
+        margin-top: 6vh;
+    }
+}

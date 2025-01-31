@@ -1,0 +1,166 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.updateTitleEvent {
+    font-size: 40px;
+}
+
+.centerUpdateEvent {
+    padding: 10px;
+}
+
+.updateEvent {
+    background-color: rgb(210, 211, 211);
+}
+
+.tablaUpdateEvent {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    max-height: 170px;
+    padding: 10px;
+    margin-top: 50px;
+}
+
+.reqUpdateEvent {
+    font-size: 20px;
+}
+
+.inputsUpdateEvent {
+    
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: rgb(241, 231, 231);
+    max-width: 600px;
+    padding: 20px;
+    margin-top: 4vh;
+}
+
+.updateEventName {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateEventDescription {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateEventActivity {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateEventPrice {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateEventDate {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateEventButtons {
+    margin-top: 24vh;
+}
+
+.updateButtonsEvent {
+    margin-top: 7vh;
+}
+
+/* *****DontM***** */
+
+.dontM {
+    background-color: rgb(210, 211, 211);
+}
+
+.bodyDontM{
+    padding: 10px;
+}
+
+.dontMTitle {
+    font-size: 40px;
+    margin-top: 20px;
+}
+
+.logoDontM{
+    max-width: 500px;
+    height: auto;
+    margin-top: 170px;
+   
+}
+
+.buttonsDontM {
+    margin-top: 25vh;
+    margin-bottom: 2vh;
+    width: 100%;
+}
+
+
+@media only screen and (max-width:767px) {
+
+    .centerUpdateEvent {
+        padding: 5px;
+    }
+
+    .updateTitleEvent {
+        font-size: 20px;
+    }
+
+    .tablaUpdateEvent {
+        border: 1px solid black;
+        border-radius: 5px;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        max-height: 100px;
+        max-width: 300px;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .reqUpdateEvent {
+        font-size: 16px;
+    }
+
+    .inputsUpdateEvent {
+        margin-top: 2vh;
+        padding: 10px;
+        border: 1px solid black;
+        border-radius: 5px;
+        max-width: 350px;
+    }
+
+    .updateButtonsEvent {
+        margin-top: 2vh;
+        margin-bottom: 10px;
+
+    }
+
+    /* *****DontM***** */
+    .dontMTitle {
+        font-size: 25px;
+        margin-top: 20px;
+    }
+    
+    .logoDontM{
+        max-width: 300px;
+        height: auto;
+        margin-top: 90px;
+       
+    }
+
+    .buttonsDontM {
+        margin-top: 22vh;
+    }
+}

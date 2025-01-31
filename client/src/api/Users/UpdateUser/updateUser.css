@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.updateUser {
+    background-color: rgb(210, 211, 211);
+}
+
+.centerUpdateUser{
+    padding: 10px;
+}
+
+.centerUpdateUserAdmin{
+    padding: 10px
+}
+
+.updateTitleUser {
+    font-size: 40px;
+}
+
+.tablaUpdateUser{
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+    max-height: 135px;
+    padding: 10px;
+    margin-top: 140px;
+}
+
+.headUpdateUser{
+    display: flex;
+    justify-content:space-around;
+}
+
+.reqUpdateUser{
+    font-size: 20px;
+}
+
+.inputsUpdateUser {
+    border: 2px solid black;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    background-color: rgb(241, 231, 231);
+    width: 700px;  
+    margin-top: 2vh;
+}
+
+.updateUserName {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateUserSurname {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateUserCity {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateUserPassword {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateUserRole {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.updateButtonsUser {
+    margin-top: 15vh;
+}
+
+.updateButtonsUserAdmin {
+    margin-top: 21vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .centerUpdateUser{
+        padding: 5px;
+    }
+    
+    .centerUpdateUserAdmin{
+        padding: 5px
+    }
+
+    .updateTitleUser {
+        font-size: 20px;
+    }
+
+    .tablaUpdateUser{
+        border-radius: 10px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        max-width: 350px;
+        padding: 10px;
+        margin-top: 10px;
+    }
+    
+    .reqUpdateUser{
+        font-size: 14px;
+    }
+    
+    .inputsUpdateUser {
+        padding: 10px;
+        border: 1px solid black;
+        width: auto;
+        justify-content: center;
+        margin-top: 1vh;
+    }
+
+    .updateButtonsUser {
+        margin-top: 2vh;
+
+    }
+
+    .updateButtonsUserAdmin {
+        margin-top: 1vh;
+
+    }
+}

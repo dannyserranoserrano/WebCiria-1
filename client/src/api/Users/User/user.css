@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.user {
+    background-color: rgb(210, 211, 211);
+}
+
+.centerUser{
+    padding: 10px;
+}
+
+.centerUserAdmin{
+    padding: 10px;
+}
+
+.userTitle {
+    font-size: 40px; 
+    margin-top: 10px;
+}
+
+.tablaUser {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+    max-width: 600px;
+    max-height: 145px;
+    margin-top: 170px;
+}
+
+.tablaUserAdmin{
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+    max-width: 600px;
+    max-height: 200px;
+    margin-top: 170px;
+}
+
+.headUser {
+    font-size: 20px;
+}
+
+.userButtons {
+    margin-top: 32vh;
+}
+
+.userButtonsAdmin {
+    margin-top: 27vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .centerUser{
+        padding: 5px;
+    }
+    
+
+    .userTitle {
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    .tablaUser {
+        max-width: 320px;
+        margin-top: 110px;
+    }
+
+    .tablaUserAdmin{
+        max-width: 600px;
+        max-height: 200px;
+        margin-top: 110px;
+    }
+
+    .headUser {
+        font-size: 14px;
+    }
+
+    .userButtons {
+        margin-top:29vh;
+    }
+
+    .userButtonsAdmin {
+        margin-top: 23vh;
+    }
+}

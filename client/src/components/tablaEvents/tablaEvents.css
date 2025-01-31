@@ -1,0 +1,56 @@
+.tablaEvents {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   
+}
+
+.headEvents{
+    max-height: 500px;
+}
+
+.head2Events {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 25px;
+}
+
+.linkEvents {
+    color: black;
+    text-decoration: none;
+}
+
+.bodyEvents {
+    display: flex;
+    justify-content: center;
+    }
+
+.link2Events{
+    display: flex;
+    justify-content: space-between;
+}
+
+@media only screen and (max-width:767px) {
+    .tablaEvents {
+        border: 1px solid black;
+    }
+
+    .headEvents{
+        max-height: 200px;
+    }
+    
+    .head2Events {
+        font-size: 16px;
+    }
+
+    .divEvents{
+        font-size: 12px;
+    }
+    
+    .divDateAct{
+        font-size: 12px;
+    }
+}

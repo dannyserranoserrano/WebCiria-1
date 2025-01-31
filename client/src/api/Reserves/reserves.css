@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.reserves {
+    background-color: rgb(210, 211, 211);
+    width: auto;
+    height: auto;
+}
+
+.centerReserves {
+    padding: 10px;
+}
+
+.reservesTitle {
+    margin-top: 30px;
+    font-size: 40px;
+}
+
+.reservesTable {
+    margin-top: 60px;
+    width: 600px;
+}
+
+.reservesButtons {
+    margin-top: 15vh;
+}
+
+@media only screen and (max-width:767px) {
+    .centerReserves {
+        padding-bottom: 185px;
+    }
+
+    .reservesTitle {
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    .reservesTable {
+        margin-top: 70px;
+        max-width: 350px;
+
+    }
+
+    .reservesButtons {
+        margin-top: 9vh;
+    }
+
+}

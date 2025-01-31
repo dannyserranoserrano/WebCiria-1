@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.activity {
+    background-color: rgb(210, 211, 211);
+}
+
+.centerActivity{
+    padding: 10px;
+}
+
+.activityTitle {
+    font-size: 40px;
+    margin-top: 10px;
+}
+
+.tablaActivity {
+    border: 1px solid black;
+    border-radius: 10px;
+    max-width: 600px;
+    background-color: white;
+    margin-top: 220px;
+}
+
+.headActivity {
+    display: flex;
+    justify-content:space-around;
+    font-size: 20px;
+}
+
+.activityButtons {
+    width: 100%; 
+    margin-top: 39vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .centerActivity{
+        padding: 5px;
+    }
+
+    .activityTitle {
+        margin-top: 10px;
+        font-size: 30px;
+    }
+
+    .tablaActivity {
+        width: 300px;
+        margin-top: 170px;
+    }
+
+    .headActivity {
+        font-size: 16px;
+    }
+    
+    .activityButtons {
+        margin-top: 31vh;
+    }
+}

@@ -1,0 +1,48 @@
+.tablaUsers {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.headUsers {
+    max-height: 220px;
+}
+
+.head2Users {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 25px;
+}
+
+.linkUsers {
+    color: black;
+    text-decoration: none;
+}
+
+.link2Users {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media only screen and (max-width:767px) {
+    
+    .tablaUsers {
+        border: 1px solid black;
+    }
+
+    .head2Users {
+        font-size: 16px;
+    }
+
+    .divUsers {
+        font-size: 14px;
+    }
+
+    .divMail {
+        font-size: 12px;
+    }
+}

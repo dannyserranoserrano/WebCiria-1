@@ -1,0 +1,56 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.files {
+    background-color: rgb(210, 211, 211);
+   
+}
+
+.filesTitle {
+    margin-top: 30px;
+    font-size: 40px;
+    
+}
+
+.centerFiles{
+    padding: 10px;
+}
+
+.filesTable{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.filesButtons {
+    margin-top: 5vh;
+    width: 100%;
+}
+
+@media only screen and (max-width:767px) {
+    .files {
+        margin-top: 2px;
+    }
+
+    .filesTitle {
+
+        font-size: 25px;
+        margin-top: 5px;
+    }
+
+    .filesTable{
+        margin-top: 80px;
+    }
+
+    .centerFiles{
+        padding: 5px;
+    }
+
+    .filesButtons {
+        margin-top: 19vh;
+    }
+
+}

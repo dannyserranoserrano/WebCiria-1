@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.activities {
+    background-color: rgb(210, 211, 211);
+    width: auto;
+    height: auto;
+}
+
+.centerActivities {
+    padding: 10px;
+}
+
+.activitiesTitle {
+    font-size: 40px;
+    margin-top: 30px;
+}
+
+.activitiesTable {
+    max-height: 500px;
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+.activitiesButtons {
+    margin-top: 9vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .centerActivities {
+        padding: 5px;
+    }
+
+    .activitiesTitle {
+        margin-top: 10px;
+        font-size: 25px;
+    }
+
+    .activitiesTable {
+        max-width: 350px;
+        margin-top: 15px;
+    }
+
+    .activitiesButtons {
+        margin-top: 12vh;
+    }
+}

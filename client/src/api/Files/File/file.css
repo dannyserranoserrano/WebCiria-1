@@ -1,0 +1,115 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.file {
+    background-color: rgb(210, 211, 211);
+    width: auto;
+    height: auto;
+}
+
+.fileTitle {
+    font-size: 40px; 
+    margin-top: 30px;
+}
+
+.centerFile {
+    padding: 10px;
+}
+
+.fileUnloggTitle {
+    font-size: 50px;
+    margin-top: 250px;
+}
+
+.imgDiv {
+    margin-top: 20px;
+}
+
+.imgFile {
+    padding: 0px;
+    border-radius: 10px;
+    border: 2px solid black;
+    box-shadow: 20px 20px 20px black;
+}
+
+.fileTable {
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow: 10px 10px 10px black;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    max-height: 250px;
+    max-width: 600px;
+    margin-top: 40px;
+}
+
+.reqfile {
+    font-size: 20px;
+}
+
+
+.fileButtons {
+    margin-top: 1vh;
+    width: 100%;
+}
+
+.fileUnloggButtons {
+    margin-top: 37vh;
+    width: 100%;
+}
+
+
+@media only screen and (max-width:767px) {
+    .file {
+        margin-top: 2px;
+    }
+
+    .fileTitle {
+        margin-top: 10px;
+        font-size: 25px;
+    }
+
+    .fileUnloggTitle {
+        margin-top: 200px;
+        font-size: 30px;
+    }
+
+    .centerFile {
+        padding: 5px;
+    }
+
+    .imgDiv {
+        margin-top: 0px;
+    }
+
+    .imgFile {
+        width: 350px;
+        border-radius: 5px;
+        box-shadow: 5px 5px 5px rgb(51, 51, 51);
+    }
+
+    .fileTable {
+        border: 1px solid black;
+        border-radius: 5px;
+        max-height: 150px;
+        max-width: 300px;
+        margin-top: 20px;
+    }
+
+    .reqfile {
+        font-size: 14px;
+    }
+
+    .fileButtons {
+        margin-top: 4vh;
+    }
+
+    .fileUnloggButtons {
+        margin-top: 22vh;
+    }
+
+}

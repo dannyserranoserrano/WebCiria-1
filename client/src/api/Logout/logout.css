@@ -1,0 +1,54 @@
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.logout {
+    background-color: rgb(210, 211, 211);
+}
+
+.bodyLogout{
+    padding: 10px;
+}
+
+.logoutTitle {
+    font-size: 40px;
+    margin-top: 20px;
+}
+
+.logoLogout{
+    max-width: 500px;
+    height: auto;
+    margin-top: 170px;
+   
+}
+
+.buttonsLogout {
+    margin-top: 25vh;
+    margin-bottom: 2vh;
+    width: 100%;
+}
+
+
+@media only screen and (max-width:767px) {
+
+    .logoutTitle {
+        font-size: 25px;
+        margin-top: 20px;
+    }
+    
+    .logoLogout{
+        max-width: 300px;
+        height: auto;
+        margin-top: 90px;
+       
+    }
+
+    .buttonsLogout {
+        margin-top: 22vh;
+    }
+}

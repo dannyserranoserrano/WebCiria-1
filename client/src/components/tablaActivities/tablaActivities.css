@@ -1,0 +1,56 @@
+.tablaActivities {
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;   
+}
+
+.headActivities {
+    max-height: 500px;
+}
+
+.head2Activities {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 25px;
+}
+
+.linkActivities {
+    color: black;
+    text-decoration: none;
+}
+
+.bodyActivities {
+    display: flex;
+    justify-content: center;
+    }
+
+.link2Activities{
+    display: flex;
+    justify-content: space-between;
+}
+
+@media only screen and (max-width:767px) {
+
+    .tablaActivities {
+        border: 1px solid black;
+    }
+
+    .headActivities {
+        max-height: 300px;
+    }
+
+    .head2Activities {
+        font-size: 16px;
+    }
+
+    .divActivName{
+        font-size: 14px;
+    }
+    .divActivPay{
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.events {
+    background-color: rgb(210, 211, 211);
+    width: auto;
+    height: auto;
+}
+
+.centerEvents {
+    padding: 10px;
+
+}
+
+.eventsTitle {
+    font-size: 40px;
+    margin-top: 30px;
+}
+
+.eventsTable {
+    max-height: 500px;
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+.eventsButtons {
+    margin-top: 9vh;
+}
+
+
+@media only screen and (max-width:767px) {
+
+    .centerEvents {
+        padding: 5px;
+    }
+
+    .eventsTitle {
+        margin-top: 10px;
+        font-size: 25px;
+    }
+
+    .eventsTable {
+        max-width: 350px;
+        margin-top: 35px;
+    }
+
+    .eventsButtons {
+        margin-top: 26vh;
+    }
+}

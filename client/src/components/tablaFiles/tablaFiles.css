@@ -1,0 +1,24 @@
+.tablaFiles {
+    padding: 0px;
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow: 20px 20px 10px black;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    max-height: 600px;
+}
+
+
+@media only screen and (max-width:767px) {
+
+    .tablaFiles {
+        font-size: 12px;
+        padding: 0px;
+        border: 1px solid black;
+        box-shadow: 5px 5px 5px black; 
+        border-radius: 5px;
+        max-height: 200px;
+    }
+
+}

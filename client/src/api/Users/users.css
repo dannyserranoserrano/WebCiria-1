@@ -1,0 +1,50 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.users {
+    background-color: rgb(210, 211, 211);
+    width: auto;
+    height: auto;
+}
+
+.centerUsers{
+    padding: 10px;
+}
+
+.usersTitle {
+    margin-top: 30px;
+    font-size: 40px;
+}
+
+.usersTable {
+    margin-top: 20px;
+    max-width: 600px;
+}
+
+.usersButtons {
+    margin-top: 1vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .centerUsers{
+        padding-bottom: 55px;
+    }
+
+    .usersTitle {
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    .usersTable {
+        margin-top: 70px;
+        max-width: 350px;
+    }
+
+    .usersButtons {
+        margin-top: 9vh;
+    }
+}

@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.addFileTitle {
+    font-size: 40px;
+}
+
+.addFile {
+    background-color: rgb(210, 211, 211);
+}
+
+.inputAddFile {
+    border: 2px solid black;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 10vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 600px;
+    background-color: rgb(241, 231, 231);
+
+}
+
+.addFileName {
+    width: 200px;
+    margin-bottom: 12px;
+}
+
+.addFileDescription {
+    width: 200px;
+    margin-bottom: 12px;
+}
+
+.addFileActivity {
+    width: 200px;
+    margin-bottom: 12px;
+}
+
+.addFileDate {
+    width: 250px;
+    margin-bottom: 12px;
+}
+
+.addFileImage {
+    width: 400px;
+    margin-bottom: 12px;
+}
+
+.addFileButtons {
+    margin-top: 24vh;
+}
+
+@media only screen and (max-width:767px) {
+
+    .addFileTitle {
+        font-size: 20px;
+        margin-top: 20px;
+    }
+
+    .inputAddFile {
+        margin-top: 10px;
+    }
+
+    .addFileButtons {
+        margin-top: 2vh;
+        margin-bottom: 2vh;
+    }
+}

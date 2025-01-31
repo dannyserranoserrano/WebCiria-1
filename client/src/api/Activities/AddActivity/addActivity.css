@@ -1,0 +1,73 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.centerAddActivity{
+    padding: 10px;
+}
+
+.addTitle{
+    font-size: 40px;
+    }
+
+.addActivity{
+    background-color: rgb(210, 211, 211);
+}
+
+.inputsAddActivity{
+    margin-top: 20vh;
+    display: flex;
+    justify-content:space-between;
+    flex-wrap: wrap;
+    border: 2px solid black;
+    border-radius: 20px;
+    background-color: rgb(241, 231, 231);
+    max-width: 600px;
+    padding:20px;
+}
+
+.addName{
+    width: 200px;
+}
+
+.addPay{
+    width: 200px;
+}
+
+.Addbuttons{
+    margin-top: 33vh;
+    width: 100%;
+}
+
+@media only screen and (max-width:767px) {
+
+    .centerAddActivity{
+        padding: 5px;
+    }
+
+    .addTitle{
+        font-size: 30px;
+        }
+
+    .inputsAddActivity{
+        margin-top: 10vh;
+        border: 1px solid black;
+        width: auto;
+        justify-content:center;
+    }
+    
+    .addName{
+        width: 200px;
+    }
+    
+    .addPay{
+        width: 200px;
+    }
+    
+    .Addbuttons{
+        margin-top:22vh;
+        
+    }
+}

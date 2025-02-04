@@ -7,7 +7,7 @@ import TablaEvents from '../../components/tablaEvents/TablaEvents'
 
 const Events = () => {
 
-    const role = localStorage.getItem("role")
+    const role = localStorage.getItem("role") || null;
 
 
     const Eventos = () => (
@@ -61,12 +61,15 @@ const Events = () => {
     )
 
     // *****Operacion ternaria multiple*****
-    let eventos = role == 0 ? EventosUser() : role == 1 ? EventosUser() : Eventos()
+    // Safer role checking
+    let eventos = role === null ? Eventos() : 
+                 (role === "0" || role === "1") ? EventosUser() : 
+                 Eventos();
+    
     return (
         <div>
             {eventos}
         </div>
     )
-
 }
 export default Events;

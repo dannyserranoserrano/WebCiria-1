@@ -5,7 +5,8 @@ import './carousel.css'
 
 
 const Carousel = () => {
-    const [files, setFiles] = useState([])
+    const [files, setFiles] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const getFiles = async () => {
@@ -13,26 +14,40 @@ const Carousel = () => {
                 const response = await axios.get("/api/files", {
                     withCredentials: true
                 });
-                console.log(response);
-                setFiles(response.data.files);
+                setFiles(response.data.files || []);
             } catch (error) {
                 console.error('Error fetching files:', error);
+                setError('Error loading images');
                 setFiles([]);
             }
         }
         getFiles();
     }, []);
 
+    if (error) {
+        return <div className="alert alert-danger">{error}</div>;
+    }
+
     return (
         <div className="row justify-content-around">
             <div id="carouselExampleFade" className="col-auto carrusel carousel slide carousel-fade w-100" data-bs-ride="carousel">
                 <div className="carousel-inner">
                     <div className="carousel-item active">
-                        <img src="./images/DSC_0477.JPG" className="imagen d-block w-100" alt="Principal" />
+                        <div className="carousel-image-container">
+                            <img src="./images/DSC_0477.JPG" className="imagen d-block w-100" alt="Principal" 
+                                 onError={(e) => {e.target.src = './images/fallback-image.jpg'}} />
+                        </div>
                     </div>
-                    {files.map(e => (
-                        <div key={e._id} className="carousel-item">
-                            <img src={e.image.url} className="d-block w-100" alt={e.fileName} />
+                    {Array.isArray(files) && files.map(e => (
+                        <div key={e._id || Math.random()} className="carousel-item">
+                            <div className="carousel-image-container">
+                                <img 
+                                    src={e?.image?.url || './images/fallback-image.jpg'} 
+                                    className="d-block w-100" 
+                                    alt={e?.fileName || 'Image'} 
+                                    onError={(e) => {e.target.src = './images/fallback-image.jpg'}}
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>

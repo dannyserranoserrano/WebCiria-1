@@ -18,31 +18,72 @@
 }
 
 .eventsIndex {
-    max-width: 600px;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 .carruselIndex {
-    max-width: 1000px;
+    border: 2px solid black;
+    border-radius: 6px;
+    height: 400px;
+    width: 100%;
+    max-width: 400px;
+    background-color: black;
+    box-shadow: 10px 10px 5px grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.carruselIndex .carousel,
+.carruselIndex .carousel-inner,
+.carruselIndex .carousel-item {
+    height: 100%;
+}
+
+.carruselIndex .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 @media only screen and (max-width:767px) {
-    .index {
-        margin-top: 10px
-    }
-
-    .home {
-        padding: 5px;
-    }
 
     .eventsIndex {
-        width: 370px;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .carruselIndex {
-        max-width: auto;
-        margin-bottom: 50px;
+        border: 1px solid black;
+        border-radius: 4px;
+        height: 200px;
+        width: 100%;
+        max-width: 200px;
+        background-color: black;
+        box-shadow: 3px 3px 1px grey;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
     }
+    
+    .carruselIndex .carousel,
+    .carruselIndex .carousel-inner,
+    .carruselIndex .carousel-item {
+        height: 100%;
+    }
+    
+    .carruselIndex .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        margin-bottom: 2px;
+    }
+
 }

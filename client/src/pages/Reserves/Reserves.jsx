@@ -13,7 +13,6 @@ const Reserves = () => {
                 <Header />
             </div>
             <div className="container centerReserves">
-                <div className="reservesTitle text-center"><h1>RESERVAS</h1></div>
                 <div className="container reservesTable">
                     <TablaReserves />
                 </div>

@@ -3,8 +3,9 @@ import axios from 'axios'
 import './tablaReserves.css'
 
 const TablaReserves = () => {
-    const [reserves, setReserves] = useState([])
-    const [error, setError] = useState('')
+    const role = localStorage.getItem("role");
+    const [reserves, setReserves] = useState([]);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         getReserves()
@@ -45,44 +46,103 @@ const TablaReserves = () => {
         }
     }
 
-    return (
+    // *****RESERVAS USUARIOS*****
+    const ReserveUser = () => (
+
         <div className="container tablaReserves col auto mt-4 mb-4">
             {error && <div className="alert alert-danger">{error}</div>}
             <div className="headReserves table table-responsive mb-0">
-                <div className='head2Reserves mt-2'>
-                    <div><strong>Evento</strong></div>
-                    <div><strong>Participante</strong></div>
-                    <div><strong>Acciones</strong></div>
-                </div>
+            <div className="reservesTitle text-center"><h1>RESERVAS</h1></div>
                 <div>
                     <div className="container">
-                        {reserves.map(reserve => (
-                            <div key={reserve._id} className="container linkReserves">
-                                <div className='link2Reserves m-0'>
-                                    <div className='divReserves'>
-                                        {reserve.event ? reserve.event.name : 
-                                            <span className="text-danger">Evento no disponible</span>}
-                                    </div>
-                                    <div className='divPartic'>
-                                        {reserve.participating ? 
-                                            `${reserve.participating.name || ''} ${reserve.participating.surname || ''}` :
-                                            <span className="text-danger">Participante no disponible</span>
-                                        }
-                                    </div>
-                                    <div className='divActions'>
-                                        <button 
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleDeleteReserve(reserve._id)}
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                        <div className="headReserves table-responsive">
+                            <table className="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"><strong>Evento</strong></th>
+                                        <th scope="col"><strong>Participante</strong></th>
+                                        <th scope="col"><strong>Acciones</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {reserves.map(reserve => (
+                                        <tr key={reserve._id}>
+                                            <td>
+                                                {reserve.event ? reserve.event.name :
+                                                    <span className="text-danger">Evento no disponible</span>}
+                                            </td>
+                                            <td>
+                                                {reserve.participating.name} {reserve.participating.surname}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => handleDeleteReserve(reserve._id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    )
+
+    // *****RESERVAS ADMINISTRADOR*****
+    let ReserveAdmin = () => (
+        <div className="container tablaReserves col auto mt-4 mb-4">            
+        <div className="reservesTitle text-center"><h1>RESERVAS</h1></div>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="headReserves table table-responsive mb-0">
+
+                <div>
+                    <div className="container">
+                        <div className="headReserves table-responsive">
+                            <table className="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"><strong>Evento</strong></th>
+                                        <th scope="col"><strong>Participante</strong></th>
+                                        <th scope="col"><strong>Acciones</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {reserves.map(reserve => (
+                                        <tr key={reserve._id}>
+                                            <td>
+                                                {reserve.event ? reserve.event.name :
+                                                    <span className="text-danger">Evento no disponible</span>}
+                                            </td>
+                                            <td>
+                                                {reserve.participating.name} {reserve.participating.surname}
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => handleDeleteReserve(reserve._id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+    let tablaReservas = role == 0 ? ReserveUser() : role == 1 ? ReserveAdmin() : <div>No tienes permisos para acceder a esta página</div>
+    return (
+        <div>
+            {tablaReservas}
         </div>
     )
 }

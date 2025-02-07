@@ -14,7 +14,7 @@
   "author": "Danny Serrano",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.9"
   },
   "dependencies": {
     "axios": "^1.7.9",

@@ -16,7 +16,6 @@ const File = () => {
     const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
-
     useEffect(() => {
         const getFile = async () => {
             try {
@@ -46,7 +45,6 @@ const File = () => {
     const deleteFile = async (e) => {
         e.preventDefault();
 
-
         // *****Confirmación*****
         let option = window.confirm("Seguro que quieres eliminar el archivo???")
         if (option === true) {
@@ -57,13 +55,10 @@ const File = () => {
                 withCredentials: true
             })
             try {
-
                 setSuccessMessage(response2.data.message)
-
                 setTimeout(() => {
                     window.location.href = '/'
                 }, 2000)
-
             } catch (error) {
                 setErrorMessage(error.response2.data.message)
                 setTimeout(() => {
@@ -73,80 +68,18 @@ const File = () => {
         };
     };
 
-    // let evento = (event.name) == null ? "nulo" : {(event.name)}
-
-    // ******FILES UNLOGGED*****
-    const imageUnlogged = () => (
+    return (
         <div className="file">
             <div className="header">
                 <Header />
             </div>
             <div className="container centerFile">
-                <div className="fileUnloggTitle text-center"><p>No estás registrado o no estás Logueado</p></div>
-                {/* *****Buttons***** */}
-                <div className="container fileUnloggButtons mb-3">
-                    <div className=" row justify-content-start">
-                        <div className="col-auto">
-                            <Link className="btn btn-primary" type="button" to="/files">Volver</Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-
-    // ******FILES USER*****
-    const imageUser = () => (
-        <div className="file">
-            <div className="header">
-                <Header />
-            </div>
-            <div className="container centerFile">
-                <div className="fileTitle text-center"><p>{file.fileName}</p></div>
-                <div className="imgDiv row justify-content-center">
-                    <img className="imgFile " src={image.url} alt={file.fileName} />
-                </div>
-                <div className="container fileTable w-100 table table-responsive">
-                    <div className="headFile ">
-                        <div className="reqfile"><strong>Nombre:</strong> {file.fileName}</div>
-                        <div className="reqfile"><strong>Descripción:</strong> {file.description}</div>
-                        <div className="reqfile"><strong>Fecha</strong> {new Date(file.date).toLocaleDateString("es")}</div>
-                        {/* <div className="reqfile"><strong>Evento:</strong> {evento}</div> */}
-                        <div className="reqfile"><strong>Usuario:</strong> {user.name} {user.surname}</div>
-                    </div>
-                </div>
-
-                {/* *****Buttons***** */}
-                <div className="container fileButtons mb-3">
-                    <div className=" row justify-content-between">
-                        {(currentUserId === file.user) && (
-                            <div className="btn-group col-auto ">
-                                <Link className="btn btn-warning" type="button" key={file._id} to={`/files/updateFile/${fileId}`}>Modificar</Link>
-                            </div>
-                        )}
-
-                        <div className="col-auto">
-                            <Link className="btn btn-primary" type="button" to="/files">Volver</Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-
-    // ******FILES ADMIN*****
-
-    const imageAdmin = () => (
-        <div className="file">
-            <div className="header">
-                <Header />
-            </div>
-            <div className="container centerFile">
-                <div className="fileTitle text-center"><p>{file.fileName}</p></div>
-                <div className="imgDiv row justify-content-center">
+                <div className="fileUnloggTitle text-center" style={{ display: !role ? "block" : "none" }}><p>No estás registrado o no estás Logueado</p></div>
+                <div className="fileTitle text-center" style={{ display: role ? "block" : "none" }}><p>{file.fileName}</p></div>
+                <div className="imgDiv row justify-content-center" style={{ display: role ? "block" : "none" }}>
                     <img className="imgFile" src={image.url} alt={image.fileName} />
                 </div>
-                <div className="container fileTable w-100 table table-responsive">
+                <div className="container fileTable w-100 table table-responsive" style={{ display: role ? "block" : "none" }}>
                     <div className="headfile">
                         <div className="reqfile"><strong>Nombre:</strong> {file.fileName}</div>
                         <div className="reqfile"><strong>Descripción:</strong> {file.description}</div>
@@ -157,12 +90,12 @@ const File = () => {
                 </div>
 
                 {/* *****AVISOS DE ERRORES***** */}
-                <div className="message_ok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: successMessage ? "block" : "none" }}>
+                <div className="message" style={{ display: successMessage ? "block" : "none" }}>
                     <div>
                         {successMessage}
                     </div>
                 </div>
-                <div className="message_ok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: errorMessage ? "block" : "none" }}>
+                <div className="message" style={{ display: errorMessage ? "block" : "none" }}>
                     <div>
                         {errorMessage}
                     </div>
@@ -174,23 +107,16 @@ const File = () => {
                         <div className="col-auto">
                             <Link className="btn btn-primary" type="button" to="/files">Volver</Link>
                         </div>
-                        <div className="btn-group col-auto ">
-                            <Link className="btn btn-warning" type="button" key={file._id} to={`/files/updateFile/${fileId}`}>Modificar</Link>
-                            <button className="btn btn-danger" onClick={deleteFile}>Borrar </button>
-                        </div>
 
+                        {(role === 1 || currentUserId === file.user) && (
+                            <div className="btn-group col-auto ">
+                                <Link className="btn btn-warning" type="button" key={file._id} to={`/files/updateFile/${fileId}`} style={{ display: currentUserId === file.user || role == 1 ? "block" : "none" }}>Modificar</Link>
+                                <button className="btn btn-danger" onClick={deleteFile} style={{ display: role == 1 ? "block" : "none" }}>Borrar </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-        </div>
-    )
-
-    // *****Operacion ternaria multiple*****
-    // eslint-disable-next-line eqeqeq
-    let galeria = role == 0 ? imageUser() : role == 1 ? imageAdmin() : imageUnlogged()
-    return (
-        <div>
-            {galeria}
         </div>
     )
 }

@@ -7,28 +7,44 @@ const Header = () => {
   const role = localStorage.getItem("role");
   const name = localStorage.getItem("name");
 
-  // *****NAVBAR UNLOGGIN*****
-  const NavBar = () => (
+  return (
     <div className="header">
-      <nav className="navbar navbar-expand-xl navbar-light bg-light">
+      <nav className="navbar navbar-expand-xl navbar-light bg-light ">
         <div className="container-fluid">
           <div className="welcomeHeader">
+            {/* Titulo y Logo */}
             <Link className="navbar-brand m-0 p-0" to="/">
               <img
                 src="/images/logo.png"
                 alt=""
                 width="130"
                 height="50"
-                className="d-inline-block align-text-top"
+                className="d-inline-block align-text-top ms-5"
               />
-              <p className="titleHead ms-2 m-0">Bienvenidos a CIRIA</p>
+              <p className="titleHead ms-2 m-0">Bienvenid@s a CIRIA</p>
             </Link>
-            <p className="p navbar-brand h6 text-center w-25">
+
+            {/* Saludo Unloggin */}
+            <p className="p navbar-brand h6 text-center w-25" style={{ display: !role ? "block" : "none" }}>
               Hola Usuario
               <br />
               No estas registrado
             </p>
+
+            {/* Saludo User */}
+            <p className="p navbar-brand text-center w-100" style={{ display: role == 0 ? "block" : "none" }}>
+              Hola {name},<br />
+              estás Loguead@
+            </p>
+
+            {/* Saludo Admin */}
+            <p className="p navbar-brand text-center w-100" style={{ display: role == 1 ? "block" : "none" }}>
+              Hola {name},<br />
+              eres Administrador/@
+            </p>
           </div>
+
+          {/* Desplegable User */}
           <button
             className="navbar-toggler"
             type="button"
@@ -41,15 +57,11 @@ const Header = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div
-            className="collapse navbar-collapse menu col-3"
-            id="navbarNavDropdown"
-          >
+            className="collapse navbar-collapse menu col-3" id="navbarNavDropdown" >
             <ul className="navbar-nav ">
-              <div
-                className="btn-group"
-                role="group"
-                aria-label="Basic outlined example"
-              >
+
+              {/* *****UNLOGGED***** */}
+              <div className="btn-group" role="group" aria-label="Basic outlined example" style={{ display: !role ? "block" : "none" }}>
                 <Link
                   className="btn btn-outline-success"
                   type="button"
@@ -65,174 +77,28 @@ const Header = () => {
                   Logueate
                 </Link>
               </div>
-              <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/">
-                  Home
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active"
-                  aria-current="page"
-                  to="/files"
-                >
-                  Galería
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </div>
-  );
 
-  // *****NAVBAR USER*****
-
-  const NavBarUser = () => (
-    <div className="header">
-      <nav className="navbar navbar-expand-xl navbar-light bg-light">
-        <div className="container-fluid">
-          <div className="welcomeHeader">
-            <Link className="navbar-brand m-0 p-0" to="/">
-              <img
-                src="/images/logo.png"
-                alt=""
-                width="130"
-                height="50"
-                className="d-inline-block align-text-top ms-5"
-              />
-              <p className="titleHead ms-2 m-0">Bienvenid@s a CIRIA</p>
-            </Link>
-            <p className="p navbar-brand text-center w-100">
-              Hola {name},<br />
-              estás Loguead@
-            </p>
-          </div>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div
-            className="collapse navbar-collapse menu col-3"
-            id="navbarNavDropdown"
-          >
-            <ul className="navbar-nav ">
-              <li className="nav-item dropdown">
+              {/* *****MENU ADMIN y USER***** */}
+              <li className="nav-item dropdown" style={{ display: role ? "block" : "none" }}>
                 <button
                   className="btn btn-sm btn-outline-primary dropdown-toggle mt-1"
                   id="dropdownMenuLink"
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
+                  style={{ display: role == 0 ? "block" : "none" }}
                 >
-                  Usuario
+                  USUARIO
                 </button>
-                <ul
-                  className="dropdown-menu"
-                  aria-labelledby="navbarDropdownMenuLink"
-                >
-                  <li>
-                    <Link className="dropdown-item btn-sm" to="/user">
-                      Datos Personales
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item btn-sm" to="/reserve">
-                      Inscripciones
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link active" aria-current="page" to="/">
-                  Home
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active"
-                  aria-current="page"
-                  to="/files"
-                >
-                  Galería
-                </Link>
-              </li>
-              {/* *****LOGGED***** */}
-              <li className="nav-item">
-                <Link
-                  className="nav-link active"
-                  aria-current="page"
-                  to="/events"
-                >
-                  Eventos
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link active" type="submit" to="/logout">
-                  Cerrar Sesion
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </div>
-  );
-
-  // *****NAVBAR ADMIN*****
-
-  const NavBarAdmin = () => (
-    <div className="header">
-      <nav className="navbar navbar-expand-xl navbar-light bg-light ">
-        <div className="container-fluid">
-          <div className="welcomeHeader">
-            <Link className="navbar-brand m-0 p-0" to="/">
-              <img
-                src="/images/logo.png"
-                alt=""
-                width="130"
-                height="50"
-                className="d-inline-block align-text-top ms-5"
-              />
-              <p className="titleHead ms-2 m-0">Bienvenid@s a CIRIA</p>
-            </Link>
-            <p className="p navbar-brand text-center w-100">
-              Hola {name},<br />
-              eres Administrador/@
-            </p>
-          </div>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div
-            className="collapse navbar-collapse menu col-3"
-            id="navbarNavDropdown"
-          >
-            <ul className="navbar-nav ">
-              <li className="nav-item dropdown">
                 <button
                   className="btn btn-sm btn-outline-primary dropdown-toggle mt-1"
                   id="dropdownMenuLink"
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
+                  style={{ display: role == 1 ? "block" : "none" }}
                 >
-                  Administrador
+                  ADMINISTRADOR
                 </button>
                 <ul
                   className="dropdown-menu"
@@ -240,19 +106,48 @@ const Header = () => {
                 >
                   <li>
                     <Link className="dropdown-item btn-sm " to="/user">
-                      Datos Personales
+                      DATOS PERSONALES
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item btn-sm " to="/reserve">
-                      Inscripciones
+                    <Link className="dropdown-item btn-sm " to="/reserves">
+                      INSCRIPCIONES
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="nav-link active"
+                      aria-current="page"
+                      to="/activities"
+                      style={{ display: role == 1 ? "block" : "none" }}
+                    >
+                      ACTIVIDADES
+                    </Link>
+                  </li>
+                  <li className="nav-item" style={{ display: role == 1 ? "block" : "none" }}>
+                    <Link
+                      className="nav-link active"
+                      aria-current="page"
+                      to="/users"
+                    >
+                      USUARIOS
+                    </Link>
+                  </li>
+                  <li className="nav-item" style={{ display: role == 1 ? "block" : "none" }}>
+                    <Link
+                      className="nav-link active "
+                      aria-current="page"
+                      to="/reserves"
+                    >
+                      RESERVAS
                     </Link>
                   </li>
                 </ul>
               </li>
+
               <li className="nav-item">
                 <Link className="nav-link active" aria-current="page" to="/">
-                  Home
+                  HOME
                 </Link>
               </li>
               <li className="nav-item">
@@ -261,49 +156,21 @@ const Header = () => {
                   aria-current="page"
                   to="/files"
                 >
-                  Galería
+                  GALERÍA
                 </Link>
               </li>
-              {/* *****ADMINISTRATOR***** */}
-              <li className="nav-item">
+              <li className="nav-item" style={{ display: role ? "block" : "none" }}>
                 <Link
                   className="nav-link active"
                   aria-current="page"
                   to="/events"
                 >
-                  Eventos
+                  EVENTOS
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active"
-                  aria-current="page"
-                  to="/activities"
-                >
-                  Actividades
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active"
-                  aria-current="page"
-                  to="/users"
-                >
-                  Usuarios
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className="nav-link active "
-                  aria-current="page"
-                  to="/reserves"
-                >
-                  Reservas
-                </Link>
-              </li>
-              <li className="nav-item">
+              <li className="nav-item" style={{ display: role ? "block" : "none" }}>
                 <Link className="nav-link active" type="button" to="/logout">
-                  Cerrar Sesión
+                  SALIR
                 </Link>
               </li>
             </ul>
@@ -312,10 +179,6 @@ const Header = () => {
       </nav>
     </div>
   );
-
-  // *****Operacion ternaria multiple*****
-  let nav = role == 0 ? NavBarUser() : role == 1 ? NavBarAdmin() : NavBar();
-  return <div>{nav}</div>;
 };
 
 export default Header;

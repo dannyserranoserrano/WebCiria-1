@@ -5,7 +5,6 @@ import axios from 'axios';
 import Header from '../../components/header/Header';
 import "./register.css"
 
-
 const Register = () => {
 
     const [userRegister, setUserRegister] = useState({
@@ -15,7 +14,6 @@ const Register = () => {
         email: "",
         password: "",
     });
-
 
     const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -97,12 +95,12 @@ const Register = () => {
                         </div>
 
                         {/* *****AVISOS DE ERRORES***** */}
-                        <div className="message_ok shadow-lg m-3 p-3 bg-body rounded border" style={{ display: successMessage ? "block" : "none" }}>
+                        <div className="message" style={{ display: successMessage ? "block" : "none" }}>
                             <div>
                                 {successMessage}
                             </div>
                         </div>
-                        <div className="message_ok shadow-lg m-3 p-3 bg-body rounded border" style={{ display: errorMessage ? "block" : "none" }}>
+                        <div className="message" style={{ display: errorMessage ? "block" : "none" }}>
                             <div>
                                 {errorMessage}
                             </div>

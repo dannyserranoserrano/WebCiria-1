@@ -6,6 +6,7 @@ import axios from "axios";
 
 
 const Event = () => {
+    const role = localStorage.getItem("role");
     const { eventId } = useParams();
     const [event, setEvent] = useState([]);
     const [participating, setParticipating] = useState([]);
@@ -14,10 +15,16 @@ const Event = () => {
     const [errorMessage, setErrorMessage] = useState(null);
     const [userRole, setUserRole] = useState(null);
     const [currentUserId, setCurrentUserId] = useState(null);
+    const [userParticipating, setUserParticipating] = useState(false)
 
     useEffect(() => {
-        const getEvent = async () => {
-            try {
+        getEvent()
+    }, [eventId])
+
+    // *****FUNCION PARA RECOGER EVENTO*****
+    const getEvent = async () => {
+        try {
+            if (role) {
                 const userResponse = await axios.get('/api/findUser', {
                     withCredentials: true
                 });
@@ -28,22 +35,26 @@ const Event = () => {
                     withCredentials: true
                 });
                 console.log(response);
-                setEvent(response.data.event)
-                setParticipating(response.data.event.participating)
-                setActivity(response.data.event.activity)
-            } catch (error) {
-                console.error('Error fetching event:', error);
-                if (error.response?.status === 401) {
-                    setErrorMessage("Por favor, inicia sesión para ver este evento.");
-                } else {
-                    setErrorMessage("Error al cargar el evento.");
-                }
-            }
-        }
-        getEvent()
-    }, [eventId])
+                setEvent(response.data.event);
+                setParticipating(response.data.event.participating);
 
-    // *****FUNCION PARA RESERVA*****
+                // Verificar si el usuario actual está en la lista de participantes
+                const isParticipating = response.data.event.participating.some(
+                    participant => participant._id === userResponse.data.user._id
+                );
+                setUserParticipating(isParticipating);
+                console.log(isParticipating)
+                setActivity(response.data.event.activity);
+            } else {
+                setErrorMessage("Por favor, inicia sesión para ver este evento.");
+            }
+        } catch (error) {
+            console.error('Error fetching event:', error);
+            setErrorMessage("Error al cargar el evento.");
+        }
+    };
+
+    // *****FUNCION PARA CREAR RESERVA*****
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -69,7 +80,7 @@ const Event = () => {
         };
     };
 
-    // *****FUNCION PARA BORRAR*****
+    // *****FUNCION PARA BORRAR RESERVA*****
     const deleteEvent = async (e) => {
         e.preventDefault();
 
@@ -93,125 +104,21 @@ const Event = () => {
             }
         };
     };
-    // ******EVENT UNLOGGED*****
-    const Evento = () => (
+
+    return (
         <div className="event">
             <div className="header">
                 <Header />
             </div>
             <div className="container centerEvent">
                 <div className="eventTitle text-center"><p>EVENTO</p></div>
-                <div className="container table table-responsive tablaEvent w-100">
-                    <div className="headEvent ">
-                        <div className="reqEvent"><strong>Evento:</strong></div>
-                        <div className="resEvent"> {event.name}</div>
-                        <div className="reqEvent"><strong>Actividad:</strong></div>
-                        <div className="resEvent"> {activity.name} ({activity.pay})</div>
-                        <div className="reqEvent"><strong>Descripción:</strong></div>
-                        <div className="resEvent"> {event.description}</div>
-                        <div className="reqEvent"><strong>Fecha de Actividad:</strong></div>
-                        <div className="resEvent"> {new Date(event.dateActivity).toLocaleString('es')}</div>
-                    </div>
-                </div>
-
-                {/* *****AVISOS DE ERRORES***** */}
-                <div className="message_ok shadow-lg p-1 m-3 bg-body rounded border text-center" style={{ display: successMessage ? "block" : "none" }}>
-                    <div>
-                        {successMessage}
-                    </div>
-                </div>
-                <div className="message_nok shadow-lg p-1 m-3 bg-body rounded border text-center" style={{ display: errorMessage ? "block" : "none" }}>
-                    <div>
-                        {errorMessage}
-                    </div>
-                </div>
-
-                {/* *****Buttons***** */}
-                <div className="container eventButtons mb-3">
-                    <div className=" row justify-content-start">
-                        <div className="col-auto">
-                            <Link className="btn btn-primary" type="button" to="/events">Volver</Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-    // ******EVENTS LOGGED*****
-    const EventoUser = () => (
-        <div className="event">
-            <div className="header">
-                <Header />
-            </div>
-            <div className="container centerEvent">
-                <div className="eventTitle text-center"><p>EVENTO</p></div>
-                <div className="container table table-responsive tablaEvent w-100">
+                <div className="container table table-responsive tablaEvent w-100" style={{ display: userParticipating ? "block" : "none" }}>
                     <div className="headEvent">
                         <div className="reqEvent"><strong>Evento:</strong> {event.name}</div>
-                        <div className="reqEvent"><strong>Actividad:</strong> {activity.name} {activity.pay}</div>
-                        <div className="reqEvent"><strong>Descripción:</strong> {event.description}</div>
-                        <div className="reqEvent"><strong>Precio:</strong> {event.price}€</div>
-                        <div className="reqEvent"><strong>Fecha de Actividad:</strong> {new Date(event.dateActivity).toLocaleString('es')}</div>
-                        <div className="reqEvent"><strong>Participantes:</strong>  </div>
-                        {participating.map(e => (
-                            <div key={e._id} className="m-0 container">
-                                <div className="resEvent p-0">-{e.name} {e.surname}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* *****AVISOS DE ERRORES***** */}
-                <div className="message_ok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: successMessage ? "block" : "none" }}>
-                    <div>
-                        {successMessage}
-                    </div>
-                </div>
-                <div className="message_nok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: errorMessage ? "block" : "none" }}>
-                    <div>
-                        {errorMessage}
-                    </div>
-                </div>
-
-                {/* *****Buttons***** */}
-                <div className="row justify-content-center m-4">
-                    <div className="col-auto">
-                        <form onSubmit={handleSubmit}>
-                            <button className="btn btn-success" type="submit" >Inscribirme </button>
-                        </form>
-                    </div>
-                </div>
-                <div className="container eventButtons mb-3">
-                    <div className=" row justify-content-between">
-                        <div className="col-auto">
-                            <Link className="btn btn-primary" type="button" to="/events">Volver</Link>
-                        </div>
-                        {(userRole === 1 || currentUserId === event.userCreate) && (
-                            <div className="btn-group col-auto ">
-                                <Link className="btn btn-warning" type="button" key={event._id} to={`/events/updateEvent/${eventId}`}>Modificar</Link>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-
-    // ******EVENTS ADMIN*****
-    const EventoAdmin = () => (
-        <div className="event">
-            <div className="header">
-                <Header />
-            </div>
-            <div className="container centerEvent">
-                <div className="eventTitle text-center"><p>EVENTO</p></div>
-                <div className="container table table-responsive tablaEvent w-100">
-                    <div className="headEvent">
-                        <div className="reqEvent"><strong>Evento:</strong> {event.name}</div>
+                        <div className="reqEvent"><strong>Fecha del Evento:</strong> {new Date(event.dateActivity).toLocaleString('es')}</div>
                         <div className="reqEvent"><strong>Actividad:</strong> {activity.name} ({activity.pay})</div>
                         <div className="reqEvent"><strong>Descripción:</strong> {event.description}</div>
                         <div className="reqEvent"><strong>Precio:</strong> {event.price}€</div>
-                        <div className="reqEvent"><strong>Fecha de Actividad:</strong> {new Date(event.dateActivity).toLocaleString('es')}</div>
                         <div className="reqEvent"><strong>Participantes:</strong></div>
                         {participating && participating.length > 0 ? (
                             participating.map(e => (
@@ -228,23 +135,23 @@ const Event = () => {
                 </div>
 
                 {/* *****AVISOS DE ERRORES***** */}
-                <div className="message_ok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: successMessage ? "block" : "none" }}>
-                    <div>
-                        {successMessage}
+                <div className="container messagesBox">
+                    <div className="message" style={{ display: successMessage ? "block" : "none" }}>
+                        <div> {successMessage} </div>
+                    </div>
+                    <div className="message" style={{ display: errorMessage ? "block" : "none" }}>
+                        <div> {errorMessage} </div>
                     </div>
                 </div>
-                <div className="message_nok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: errorMessage ? "block" : "none" }}>
-                    <div>
-                        {errorMessage}
-                    </div>
-                </div>
+
 
                 {/* *****Buttons***** */}
                 <div className="row justify-content-center m-4">
                     <div className="col-auto">
                         <form onSubmit={handleSubmit}>
-                            <button className="btn btn-success" type="submit" >Inscribirme </button>
+                            <button className="btn btn-success" type="submit" hidden={userParticipating || !role} >Inscribirme </button>
                         </form>
+                        <p className="message" style={{ display: userParticipating ? "block" : "none" }}>Ya estás inscrito</p>
                     </div>
                 </div>
                 <div className="container eventButtons mb-3">
@@ -252,22 +159,16 @@ const Event = () => {
                         <div className="col-auto">
                             <Link className="btn btn-primary" type="button" to="/events">Volver</Link>
                         </div>
-                        <div className="btn-group col-auto ">
-                            <Link className="btn btn-warning" type="button" key={event._id} to={`/events/updateEvent/${eventId}`}>Modificar</Link>
-                            <button className="btn btn-danger" onClick={deleteEvent}>Borrar </button>
-                        </div>
+                        {(userRole === 1 || currentUserId === event.userCreate) && (
+                            <div className="btn-group col-auto ">
+                                <Link className="btn btn-warning" type="button" key={event._id} to={`/events/updateEvent/${eventId}`}>Modificar</Link>
+                                <button className="btn btn-danger" onClick={deleteEvent}>Borrar </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-        </div>
-    )
-
-    // *****Operacion ternaria multiple*****
-    let evento = userRole === 0 ? EventoUser() : userRole === 1 ? EventoAdmin() : Evento()
-    return (
-        <div>
-            {evento}
-        </div>
+        </div >
     )
 }
 

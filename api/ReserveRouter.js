@@ -14,19 +14,19 @@ ReserveRouter.get("/reserves", auth, authAdmin, async (req, res) => {
 
     // Find reserves based on query and populate their data
     let reserves = await Reserve.find()
-      .populate({
-        path: "participating",
-        select: "name surname",
-      })
-      .populate({
-        path: "event",
-        select: "name price",
-      });
+    .populate({
+      path: "event",
+      select: "dateActivity name",
+    })
+    .populate({
+      path: "participating",
+      select: "name surname",
+    });
 
     if (!reserves || reserves.length === 0) {
       return res.json({
         success: false,
-        message: "No hay reservas disponibles",
+        message: "No hay reservas solicitadas",
       });
     }
 
@@ -57,24 +57,24 @@ ReserveRouter.get("/reserves", auth, authAdmin, async (req, res) => {
 // *****VISUALIZAMOS TODAS MIS RESERVAS (user)*****
 ReserveRouter.get("/myReserves", auth, async (req, res) => {
   try {
-    const { id, role } = req.user;
-    //   let query = role === 1 ? {} : { participating: id };
+    const { id } = req.user;
 
     // Find reserves based on query and populate their data
-    let reserves = await Reserve.find(id)
+    let reserves = await Reserve.find({ participating: id })
+          .populate({
+        path: "event",
+        select: "name dateActivity",
+      })
       .populate({
         path: "participating",
         select: "name surname",
-      })
-      .populate({
-        path: "event",
-        select: "name price",
       });
+
 
     if (!reserves || reserves.length === 0) {
       return res.json({
         success: false,
-        message: "No hay reservas disponibles",
+        message: "No hay reservas solicitadas",
       });
     }
 

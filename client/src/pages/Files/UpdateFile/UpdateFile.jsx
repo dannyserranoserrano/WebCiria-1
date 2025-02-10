@@ -4,9 +4,7 @@ import axios from 'axios';
 import Header from '../../../components/header/Header';
 import "./updateFile.css"
 
-
 const UpdateFile = () => {
-
     const [updateFile, setUpdateFile] = useState({
         fileName: "",
         description: "",
@@ -30,7 +28,6 @@ const UpdateFile = () => {
         }
         getFile()
     }, [fileId])
-
 
     // *****FUNCION ACTUALIZACION DE DATOS*****
     const handleChange = (e) => {
@@ -131,7 +128,6 @@ const UpdateFile = () => {
                                         disabled={!updateFile.fileName.length || !updateFile.description.length || !updateFile.date.length}
                                     >Modificar</button>
                                 </div>
-
                             </div>
                         </div>
                     </div>

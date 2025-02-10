@@ -2,7 +2,6 @@ import {Link} from 'react-router-dom';
 import './logout.css'
 import Header from '../../components/header/Header';
 
-
 const Logout = () => {
 
     // *****Confirmación*****

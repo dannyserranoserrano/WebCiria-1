@@ -12,7 +12,6 @@ const Reserves = () => {
       </div>
       <div className="container centerReserves">
         <TablaReserves />
-
         {/* *****Buttons***** */}
         <div className="container reservesButtons">
           <div className="row justify-content-start">

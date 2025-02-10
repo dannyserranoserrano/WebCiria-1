@@ -26,46 +26,46 @@ const UpdateEvent = () => {
     const navigate = useNavigate();
 
 
-    // *****FUNCION PARA CREAR LA TABLA CON LOS DATOS ANTIGUOS*****
     useEffect(() => {
-        const getEvent = async () => {
-            try {
-                const response = await axios.get(`/api/findEvent/${eventId}`, {
-                    withCredentials: true
-                });
-                console.log(response.data.event.userCreate);
-                setEvent(response.data.event)
-                setActivity(response.data.event.activity)
-            } catch (error) {
-                console.error('Error fetching event:', error);
-                setErrorMessage("Error al cargar el evento");
-                setTimeout(() => {
-                    navigate('/events');
-                }, 2000);
-            }
-        }
         getEvent()
+        getUser();
+        getActivities();
     }, [])
 
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const response3 = await axios.get('/api/findUser', {
-                    withCredentials: true
-                });
-                console.log(response3);
-                setUser(response3.data.user)
-                setUserRole(response3.data.user.role);
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                setErrorMessage("Error al cargar el usuario");
-            }
+    // ******BUSQUEDA DE EVENTO*****
+    const getEvent = async () => {
+        try {
+            const response = await axios.get(`/api/findEvent/${eventId}`, {
+                withCredentials: true
+            });
+            console.log(response.data.event.userCreate);
+            setEvent(response.data.event)
+            setActivity(response.data.event.activity)
+        } catch (error) {
+            console.error('Error fetching event:', error);
+            setErrorMessage("Error al cargar el evento");
+            setTimeout(() => {
+                navigate('/events');
+            }, 2000);
         }
-        getUser();
-    }, [])
+    }
+
+    // ******BUSQUEDA DE USUARIO*****
+    const getUser = async () => {
+        try {
+            const response3 = await axios.get('/api/findUser', {
+                withCredentials: true
+            });
+            console.log(response3);
+            setUser(response3.data.user)
+            setUserRole(response3.data.user.role);
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            setErrorMessage("Error al cargar el usuario");
+        }
+    }
 
     // ******BUSQUEDA DE ACTIVIDADES*****    
-    useEffect(() => {
         const getActivities = async () => {
             try {
                 const response2 = await axios.get("/api/activities", {
@@ -78,9 +78,8 @@ const UpdateEvent = () => {
                 setErrorMessage("Error al cargar las actividades");
             }
         }
-        getActivities();
-    }, []);
 
+// **********ACTUALIZAR EVENTO**********
     if ((event.userCreate == user._id) || (userRole == 1)) {
         const handleChange = (e) => {
             if (e.target.name === 'activityId') {

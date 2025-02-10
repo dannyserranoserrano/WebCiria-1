@@ -34,7 +34,6 @@ const Events = () => {
     )
 
     const EventosUser = () => (
-
         <div className="events">
             <div className="header">
                 <Header />
@@ -53,7 +52,6 @@ const Events = () => {
                         <div className="addEvents col-auto">
                             <Link className="btn btn-success" type="button" to="/events/addEvent">Añadir Evento</Link>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -64,8 +62,7 @@ const Events = () => {
     // Safer role checking
     let eventos = role === null ? Eventos() : 
                  (role === "0" || role === "1") ? EventosUser() : 
-                 Eventos();
-    
+                 Eventos();  
     return (
         <div>
             {eventos}

@@ -17,7 +17,6 @@ import Activities from "./pages/Activities/Activities";
 import AddActivity from "./pages/Activities/AddActivity/AddActivity";
 import UpdateActivity from "./pages/Activities/UpdateActivity/UpdateActivity";
 import Activity from "./pages/Activities/Activity/Activity";
-import Reserve from "./pages/Reserves/Reserve/Reserve";
 import Reserves from "./pages/Reserves/Reserves";
 import Files from "./pages/Files/Files";
 import AddFile from "./pages/Files/AddFile/AddFile";
@@ -56,7 +55,6 @@ function App() {
             path="/activities/updateActivity/:activityId"
             element={<UpdateActivity />}
           />
-          <Route path="/reserve" element={<Reserve />} />
           <Route path="/reserves" element={<Reserves />} />
           <Route path="/files" element={<Files />} />
           <Route path="/files/addFile" element={<AddFile />} />

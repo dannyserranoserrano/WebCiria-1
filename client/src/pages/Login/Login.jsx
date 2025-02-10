@@ -78,10 +78,10 @@ const Login = () => {
                                 </div>
                             </div>
                             {/* *****AVISOS DE ERRORES***** */}
-                            <div className="message_ok shadow-lg m-3 p-3 bg-body rounded border" style={{ display: successMessage ? "block" : "none" }}>
+                            <div className="message" style={{ display: successMessage ? "block" : "none" }}>
                                 {successMessage}
                             </div>
-                            <div className="message_nok shadow-lg m-3 p-3  bg-body rounded border" style={{ display: errorMessage ? "block" : "none" }}>
+                            <div className="message" style={{ display: errorMessage ? "block" : "none" }}>
                                 {errorMessage}
                             </div>
 

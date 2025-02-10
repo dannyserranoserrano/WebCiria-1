@@ -8,43 +8,14 @@ import TablaFiles from '../../components/tablaFiles/TablaFiles'
 const Files = () => {
 
     const role = localStorage.getItem("role")
-
-
-
-    // ******GALERIA UNLOGGED*****
-
-    const Galeria = () => (
+    return (
         <div className="files">
             <div className="header">
                 <Header />
             </div>
-            <div className="container centerFiles">
+            <section className="container home">
                 <div className="filesTitle text-center"><p>GALERIA</p></div>
-                <div className="container filesTable w-100">
-                    <TablaFiles />
-                </div>
-                {/* *****Buttons***** */}
-                <div className="container filesButtons">
-                    <div className="row justify-content-start">
-                        <div className="">
-                            <Link className="btn btn-primary" type="button" to="/">Volver</Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-
-    // ******GALERIA ADMIN*****
-
-    const GaleriaAdmin = () => (
-        <div className="files">
-            <div className="header">
-                <Header />
-            </div>
-            <div className="container centerFiles">
-                <div className="filesTitle text-center"><p>GALERIA</p></div>
-                <div className="container filesTable w-100">
+                <div className="container carruselIndex">
                     <TablaFiles />
                 </div>
                 {/* *****Buttons***** */}
@@ -53,22 +24,14 @@ const Files = () => {
                          <div className="col-auto">
                             <Link className="btn btn-primary" type="button" to="/">Volver</Link>
                         </div>
-                        <div className="btn-group col-auto ">
+                        <div className="btn-group col-auto" style={{ display: role ? "block" : "none" }}>
                             <div className="addFiles">
-                                <Link className="btn btn-success" type="button" to="/files/addFile" disabled>Añadir Imagen</Link>
+                                <Link className="btn btn-success" type="button" to="/files/addFile" >Añadir Imagen</Link>
                             </div>
-                        </div>
-                       
+                        </div>                      
                     </div>
                 </div>
-            </div>
-        </div>
-    )
-
-    let galeria = role == 0 ? GaleriaAdmin() : role == 1 ? GaleriaAdmin() : Galeria()
-    return (
-        <div>
-            {galeria}
+            </section>
         </div>
     )
 }

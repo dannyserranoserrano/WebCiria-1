@@ -1,6 +1,6 @@
 const express = require("express");
 const fileUpload = require("express-fileupload")
-const mongoose = require("mongoose");
+
 const cookieParser = require("cookie-parser");
 const app = express();
 require("dotenv").config();
@@ -10,7 +10,7 @@ const path = require("path")
 const UserRouter = require("./api/UserRouter")
 const FileRouter = require("./api/FileRouter")
 const EventRouter = require("./api/EventRouter")
-const ActivityRouter = require("./api/ActivityRouter")
+const ActivityRouter = require("./api/activityrouter")
 const ReserveRouter = require("./api/ReserveRouter")
 const AuthRouter = require("./api/AuthRouter")
 
@@ -40,14 +40,8 @@ app.use("/api", ActivityRouter)
 app.use("/api", ReserveRouter)
 app.use("/api", AuthRouter)
 
-
-// *****DECLARAMOS URL*****
-const URL = process.env.MONGODB_URL
-mongoose.connect(URL, {}).then(() => {
-    console.log("DB IS CONNECTED")
-}).catch(error => {
-    console.log(error)
-})
+// Eliminamos la conexión a MongoDB ya que ahora usamos PostgreSQL
+// La conexión a PostgreSQL se maneja en cada router
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'))

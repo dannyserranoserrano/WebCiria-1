@@ -4,13 +4,12 @@ const AuthRouter = express.Router();
 // Logout endpoint
 AuthRouter.post("/auth/logout", (req, res) => {
     try {
-        // Clear the token cookie
+        // Clear the token cookie without expires option
         res.clearCookie('token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            path: '/',
-            expires: new Date(0)
+            path: '/'
         });
 
         return res.status(200).json({

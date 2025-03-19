@@ -4,9 +4,11 @@ const express = require('express');
 const { Pool } = require('pg'); // Importa el cliente pg
 const auth = require('../middleware/auth'); // Asume que tienes un middleware de autenticación
 const authAdmin = require('../middleware/authAdmin'); // Asume que tienes un middleware de autorización de administrador
-const UserRouter = express.Router();
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const UserRouter = express.Router();
+
 const welcomeEmail = require("../templates/WelcomeEmail")
 const modifyEmail = require("../templates/ModifyEmail")
 const byeEmail = require("../templates/ByeEmail")
@@ -19,7 +21,6 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
-
 
 // *****VISUALIZAMOS TODOS LOS DATOS*****
 UserRouter.get("/users", auth, authAdmin, async (req, res) => {
@@ -39,7 +40,7 @@ UserRouter.get("/users", auth, authAdmin, async (req, res) => {
             users
         });
     } catch (error) {
-        return res.json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -63,7 +64,7 @@ UserRouter.get("/findUser/:userId", auth, authAdmin, async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Usuario Encontrado!!!",
+            message: "Usuario Encontrado",
             user
         });
     } catch (error) {
@@ -104,6 +105,7 @@ UserRouter.get("/findUser", auth, async (req, res) => {
 
 // // *****CREAMOS NUEVO USUARIO*****
 UserRouter.post("/newUser", async (req, res) => {
+    
     const { name, surname, city, email, password } = req.body;
 
     try {
@@ -113,45 +115,46 @@ UserRouter.post("/newUser", async (req, res) => {
         // Validaciones
         if (userFind) {
             return res.status(400).json({ success: false, message: "El Usuario ya está registrado" });
-        }
-        if (password.length < 6) {
-            return res.status(400).json({ success: false, message: "El Password debe contener 6 dígitos o más" });
-        }
-        if (name.length < 3) {
-            return res.status(400).json({ success: false, message: "Nombre Inválido" });
-        }
-        if (surname.length < 2) {
-            return res.status(400).json({ success: false, message: "Apellido Inválido" });
-        }
-        if (!name || !surname || !city || !email || !password) {
-            return res.status(400).json({ success: false, message: "Debes completar todos los campos" });
-        }
-        const re = /^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
-        if (!re.exec(email)) {
-            return res.status(400).json({ success: false, message: "El formato de Email no es correcto" });
+        } else {
+            if (password.length < 6) {
+                return res.status(400).json({ success: false, message: "El Password debe contener 6 dígitos o más" });
+            }
+            if (name.length < 3) {
+                return res.status(400).json({ success: false, message: "Nombre Inválido" });
+            }
+            if (surname.length < 2) {
+                return res.status(400).json({ success: false, message: "Apellido Inválido" });
+            }
+            if (!name || !surname || !city || !email || !password) {
+                return res.status(400).json({ success: false, message: "Debes completar todos los campos" });
+            }
+            const re = /^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+            if (!re.exec(email)) {
+                return res.status(400).json({ success: false, message: "El formato de Email no es correcto" });
+            }
+
+            // Encriptación de la contraseña
+            const passwordHash = bcrypt.hashSync(password, 10);
+
+            // Envío de correo de verificación (adapta esto a tu lógica)
+            welcomeEmail.sendWelcomeEmail(name, surname, city, email, password);
+
+            // Inserción del usuario en PostgreSQL
+            const result = await pool.query(
+                'INSERT INTO users (name, surname, city, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+                [name, surname, city, email, passwordHash]
+            );
+            const newUser = result.rows[0];
+
+            return res.status(200).json({
+                success: true,
+                message: `El usuario ${name} ${surname} se ha añadido correctamente`,
+                user: newUser
+            });
         }
 
-        // Encriptación de la contraseña
-        const passwordHash = bcrypt.hashSync(password, 10);
-
-        // Envío de correo de verificación (adapta esto a tu lógica)
-        welcomeEmail.sendWelcomeEmail(name, surname, city, email, password);
-
-        // Inserción del usuario en PostgreSQL
-        const result = await pool.query(
-            'INSERT INTO users (name, surname, city, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [name, surname, city, email, passwordHash]
-        );
-        //const newUser = result.rows[0];
-
-        return res.json({
-            success: true,
-            status: 200,
-            message: `El usuario ${name} ${surname} está añadido`,
-            //user: newUser,
-        });
     } catch (error) {
-        return res.json({ success: false, message: error.message });
+        return res.status(400).json({ success: false, message: error.message });
     }
 });
 
@@ -167,26 +170,27 @@ UserRouter.put("/updateUser/:userId", auth, authAdmin, async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+        } else {
+            const { name, surname, email, password } = user;
+
+            // Encriptar la contraseña (si es necesario)
+            const passwordHash = bcrypt.hashSync(password, 10);
+
+            // Enviar correo de modificación (adapta esto a tu lógica)
+            modifyEmail.sendModifyEmail(name, surname, city, email, password);
+
+            // Actualizar el usuario en PostgreSQL
+            await pool.query(
+                'UPDATE users SET city = $1, password = $2, role = $3 WHERE user_id = $4',
+                [city, passwordHash, role, userId]
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: `Los Datos del usuario ${name} ${surname} han sido modificados`,
+            });
         }
 
-        const { name, surname, email, password } = user;
-
-        // Encriptar la contraseña (si es necesario)
-        const passwordHash = bcrypt.hashSync(password, 10);
-
-        // Enviar correo de modificación (adapta esto a tu lógica)
-        modifyEmail.sendModifyEmail(name, surname, city, email, password);
-
-        // Actualizar el usuario en PostgreSQL
-        await pool.query(
-            'UPDATE users SET city = $1, password = $2, role = $3 WHERE user_id = $4',
-            [city, passwordHash, role, userId]
-        );
-
-        return res.status(200).json({
-            success: true,
-            message: `Los Datos del usuario ${name} ${surname} han sido modificados`,
-        });
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -251,29 +255,31 @@ UserRouter.delete("/deleteUser/:userId", auth, async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+        } else {
+            const { name, surname, city, email } = user;
+
+            // Enviar correo de despedida (adapta esto a tu lógica)
+            byeEmail.sendByeEmail(name, surname, city, email);
+
+            // Eliminar reservas del usuario (participating)
+            await pool.query('DELETE FROM reserves WHERE user_id = $1', [userId]);
+
+            // Eliminar eventos creados por el usuario (userCreate)
+            await pool.query('DELETE FROM events WHERE user_create_id = $1', [userId]);
+
+            // Eliminar el usuario
+            await pool.query('DELETE FROM users WHERE user_id = $1', [userId]);
+
+            // Eliminar el usuario de la tabla de participantes de eventos.
+            await pool.query('DELETE FROM reserves WHERE user_id = $1', [userId]);
+
+            return res.status(200).json({
+                success: true,
+                message: "El Usuario ha sido borrado",
+            });
         }
 
-        const { name, surname, city, email } = user;
 
-        // Enviar correo de despedida (adapta esto a tu lógica)
-        byeEmail.sendByeEmail(name, surname, city, email);
-
-        // Eliminar reservas del usuario (participating)
-        await pool.query('DELETE FROM reserves WHERE user_id = $1', [userId]);
-
-        // Eliminar eventos creados por el usuario (userCreate)
-        await pool.query('DELETE FROM events WHERE user_create_id = $1', [userId]);
-
-        // Eliminar el usuario
-        await pool.query('DELETE FROM users WHERE user_id = $1', [userId]);
-
-        // Eliminar el usuario de la tabla de participantes de eventos.
-        await pool.query('DELETE FROM event_participants WHERE user_id = $1', [userId]);
-
-        return res.status(200).json({
-            success: true,
-            message: "El Usuario ha sido borrado",
-        });
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -294,32 +300,33 @@ UserRouter.delete("/deleteUser", auth, async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ success: false, message: "Usuario no encontrado" });
-        }
+        } else {
+            const { name, surname, city, email } = user;
 
-        const { name, surname, city, email } = user;
+            // Enviar correo de despedida (adapta esto a tu lógica)
+            byeEmail.sendByeEmail(name, surname, city, email);
 
-        // Enviar correo de despedida (adapta esto a tu lógica)
-        byeEmail.sendByeEmail(name, surname, city, email);
+            // Eliminar reservas del usuario (participating)
+            await pool.query('DELETE FROM reserves WHERE user_id = $1', [id]);
 
-        // Eliminar reservas del usuario (participating)
-        await pool.query('DELETE FROM reserves WHERE user_id = $1', [id]);
+            // Eliminar eventos creados por el usuario (userCreate)
+            await pool.query('DELETE FROM events WHERE user_create_id = $1', [id]);
 
-        // Eliminar eventos creados por el usuario (userCreate)
-        await pool.query('DELETE FROM events WHERE user_create_id = $1', [id]);
+            // Eliminar el usuario
+            await pool.query('DELETE FROM users WHERE user_id = $1', [id]);
 
-        // Eliminar el usuario
-        await pool.query('DELETE FROM users WHERE user_id = $1', [id]);
+            // Eliminar el usuario de la tabla de participantes de eventos.
+            await pool.query('DELETE FROM reserves WHERE user_id = $1', [id]);
 
-        // Eliminar el usuario de la tabla de participantes de eventos.
-        await pool.query('DELETE FROM event_participants WHERE user_id = $1', [id]);
+            //Actualizar eventos donde el usuario era el creador, asignar un usuario por defecto.
+            await pool.query('UPDATE events SET user_create_id = (SELECT user_id FROM users WHERE email = \'usuario_no_existente@example.com\') WHERE user_create_id = $1', [id]);
 
-        //Actualizar eventos donde el usuario era el creador, asignar un usuario por defecto.
-        await pool.query('UPDATE events SET user_create_id = (SELECT user_id FROM users WHERE email = \'usuario_no_existente@example.com\') WHERE user_create_id = $1',[id]);
+            return res.status(200).json({
+                success: true,
+                message: "El Usuario ha sido borrado",
+            })
+        };
 
-        return res.status(200).json({
-            success: true,
-            message: "El Usuario ha sido borrado",
-        });
     } catch (error) {
         return res.status(500).json({
             success: false,

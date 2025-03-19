@@ -11,19 +11,20 @@ const TablaActivities = () => {
     useEffect(() => {
         const getActivities = async () => {
             try {
-                const response = await axios.get("/api/activities", { withCredentials: true });
-                console.log('API Response:', response.data); // Debug log
+                const response = await axios.get("0/api/activities", { withCredentials: true });
+                const data = await response.json();
+                console.log('API Response:', data); // Debug log
 
-                if (!response.data || response.data.success === false) {
-                    setError(response.data?.message || 'Error loading activities');
+                if (!data || data.success === false) {
+                    setError(data?.message || 'Error loading activities');
                     setActivities([]);
                 } else {
-                    const activitiesList = response.data?.activities || [];
+                    const activitiesList = data?.activities || [];
                     console.log('Activities List:', activitiesList); // Debug log
                     setActivities(activitiesList);
                 }
             } catch (err) {
-                console.error('Axios Error:', err); // Debug log
+                console.error('Fetch Error:', err); // Debug log
                 setError(err.message);
                 setActivities([]);
             } finally {
@@ -37,10 +38,10 @@ const TablaActivities = () => {
     // Debug log for render phase
     console.log('Rendering with activities:', activities);
 
-    if (loading) {return <div className="message">Cargando actividades...</div>};
-    if (error) {return <div className="message">{error}</div>}
+    if (loading) return <div>Cargando actividades...</div>;
+    if (error) return <div>{error}</div>;
     if (!Array.isArray(activities) || activities.length === 0) {
-        return <div className="message">No hay actividades disponibles</div>;
+        return <div>No hay actividades disponibles</div>;
     }
 
     return (
@@ -51,12 +52,12 @@ const TablaActivities = () => {
                     <div><strong>Pago</strong></div>
                 </div>
                 <div>
-                    {activities.map((e) => (
-                        <div key={e?.id || Math.random()} className="bodyActivities">
+                    {activities.map((activity) => (
+                        <div key={activity?.id || Math.random()} className="bodyActivities">
                             <Link to={`/activities/${e._id}`} className="container linkActivities"  >
                                 <div className='link2Activities'>
-                                    <h3>{e?.name || 'Sin nombre'}</h3>
-                                    <p>{e?.pay || 'Sin valor depago'}</p>
+                                    <h3>{activity?.name || 'Sin nombre'}</h3>
+                                    <p>{activity?.pay || 'Sin valor depago'}</p>
                                 </div>
                             </Link>
                         </div>

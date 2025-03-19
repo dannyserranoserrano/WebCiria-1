@@ -29,22 +29,24 @@ const AddActivity = () => {
 
         try {
             const response = await axios.post(
-                '/api/newActivity',
-                { ...addActivity }, {
-                    withCredentials: true
-            })
+                '/api/newActivity',  // This will be proxied to your backend
+                addActivity,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
 
-            setSuccessMessage(response.data.message)
+            setSuccessMessage(response.data.message);
 
             setTimeout(() => {
-                navigate('/activities')
-            }, 2000)
+                navigate('/activities');
+            }, 2000);
 
         } catch (error) {
-            setErrorMessage(error.response.data.message)
-            setTimeout(() => {
-                window.location.href = "/activities/addActivity"
-            }, 2000)
+            setErrorMessage(error.response?.data?.message || 'Error al crear la actividad');
         }
     };
 
@@ -65,7 +67,13 @@ const AddActivity = () => {
                             </div>
                             <div className='addPay'>
                                 <label className="form-label">De pago</label>
-                                <select className="form-select" name="pay" value={addActivity.pay} onChange={handleChange} aria-label="Default select example" defaultValue="Selecciona...">
+                                <select 
+                                    className="form-select" 
+                                    name="pay" 
+                                    value={addActivity.pay} 
+                                    onChange={handleChange} 
+                                    aria-label="Default select example"
+                                >
                                     <option value="">Selecciona...</option>
                                     <option value="Pago">Pago</option>
                                     <option value="Gratis">Gratis</option>

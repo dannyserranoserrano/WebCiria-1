@@ -21,11 +21,12 @@ const AddEvent = () => {
   useEffect(() => {
     const getActivity = async () => {
       try {
-        const response2 = await axios.get("/api/activities", {
+        const response = await axios.get("/api/activities", {
           withCredentials: true
         });
-        console.log(response2.data.activity);
-        setActivity(response2.data.activity);
+        console.log(response.data);
+        // Update this line to match your API response structure
+        setActivity(response.data.activities || []); // Changed from response.data.activity to response2.data.activities
       } catch (error) {
         console.error('Error fetching activities:', error);
         setErrorMessage("Error al cargar las actividades");
@@ -73,14 +74,14 @@ const AddEvent = () => {
 
       setSuccessMessage(response.data.message);
 
-      setTimeout(() => {
-        navigate("/events");
-      }, 2000);
+      // setTimeout(() => {
+      //   navigate("/events");
+      // }, 2000);
     } catch (error) {
       setErrorMessage(error.response.data.message);
-      setTimeout(() => {
-        window.location.href = "/events/addEvent";
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.href = "/events/addEvent";
+      // }, 2000);
     }
   };
 
@@ -126,11 +127,13 @@ const AddEvent = () => {
                 className="form-select"
                 name="activityId"
                 onChange={handleChange}
+                value={addEvent.activityId}
                 aria-label="Default select example"
               >
-                <option selected>Selecciona...</option>
-                {activity.map((e) => (
-                  <option key={e._id} value={e._id}>
+                <option value="">Selecciona...</option>
+                {/* Add a check to ensure activity is an array before mapping */}
+                {Array.isArray(activity) && activity.map((e) => (
+                  <option key={e.activity_id} value={e.activity_id}>
                     {e.name} ({e.pay})
                   </option>
                 ))}

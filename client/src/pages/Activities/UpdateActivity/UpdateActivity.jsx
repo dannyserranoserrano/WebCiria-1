@@ -21,17 +21,17 @@ const UpdateActivity = () => {
     useEffect(() => {
         const getActivity = async () => {
             try {
-                const response2 = await axios.get(`/api/findActivity/${activityId}`, {
+                const response = await axios.get(`/api/findActivity/${activityId}`, {
                 withCredentials: true
             });
-                console.log(response2);
-                setActivity(response2.data.activity)
+                console.log(response);
+                setActivity(response.data.activity)
             } catch (error) {
                 console.error('Error fetching activity:', error);
                 setErrorMessage("Error al cargar la actividad");
-                setTimeout(() => {
-                    navigate('/activities');
-                }, 2000);
+                // setTimeout(() => {
+                //     navigate('/activities');
+                // }, 2000);
             }
         }
         getActivity()
@@ -52,7 +52,8 @@ const UpdateActivity = () => {
             try {
                 const response = await axios.put(
                     `/api/updateActivity/${activityId}`,
-                    { ...updateActivity }
+                    { ...updateActivity },
+                    { withCredentials: true }  // Add this line
                 );
 
                 setSuccessMessage(response.data.message)

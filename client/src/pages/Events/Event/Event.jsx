@@ -5,67 +5,121 @@ import Header from '../../../components/header/Header'
 import axios from "axios";
 
 
+
+
 const Event = () => {
+
     const role = localStorage.getItem("role");
     const { eventId } = useParams();
-    const [event, setEvent] = useState([]);
-    const [participating, setParticipating] = useState([]);
-    const [activity, setActivity] = useState({});
+    const [user, setUser] = useState({}); //Guardado del usuario
+    const [evento, setEvento] = useState({}); //Guardado del evento
+    const [activity, setActivity] = useState({}); //Guardado de la actividad
+    const [isReserve, setIsReserve] = useState(false) //Estado de la reserva del usuario
+    const [reserves, setReserves] = useState({}); //Guardado de las reservas
+
     const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
-    const [userRole, setUserRole] = useState(null);
-    const [currentUserId, setCurrentUserId] = useState(null);
-    const [userParticipating, setUserParticipating] = useState(false)
 
     useEffect(() => {
+        getUser()
         getEvent()
     }, [eventId])
+
+    // Añadimos un nuevo useEffect que se ejecutará cuando tengamos los datos del usuario
+    useEffect(() => {
+        if (user.user_id) {
+            getReserve()
+        }
+    }, [user, eventId])
+
+    // Funcion para coger la reserva
+    const getReserve = async () => {
+        try {
+            const response = await axios.get(`/api/findReserve/${eventId}`, {
+                withCredentials: true
+            });
+
+            const reservasEvento = response.data.reserves;
+            setReserves(reservasEvento);
+
+            // Verificamos si el usuario actual tiene una reserva
+            if (Array.isArray(reservasEvento)) {
+                const userHasReserve = reservasEvento.some(
+                    reserve => reserve.user_id === user.user_id
+                );
+                setIsReserve(userHasReserve);
+            }
+        } catch (error) {
+            console.error('Error fetching reserves:', error);
+            setErrorMessage("Error al cargar las reservas.");
+        }
+    };
 
     // *****FUNCION PARA RECOGER EVENTO*****
     const getEvent = async () => {
         try {
             if (role) {
-                const userResponse = await axios.get('/api/findUser', {
+                // Recogemos el evento
+                const eventResponse = await axios.get(`/api/findEvent/${eventId}`, {
                     withCredentials: true
                 });
-                setUserRole(userResponse.data.user.role);
-                setCurrentUserId(userResponse.data.user._id);
+                const eventData = eventResponse.data.event;
+                setEvento(eventData);
 
-                const response = await axios.get(`/api/findEvent/${eventId}`, {
-                    withCredentials: true
-                });
-                console.log(response);
-                setEvent(response.data.event);
-                setParticipating(response.data.event.participating);
-
-                // Verificar si el usuario actual está en la lista de participantes
-                const isParticipating = response.data.event.participating.some(
-                    participant => participant._id === userResponse.data.user._id
-                );
-                setUserParticipating(isParticipating);
-                console.log(isParticipating)
-                setActivity(response.data.event.activity);
+                // Call getActivity only after we have the event data with activity_id
+                if (eventData && eventData.activity_id) {
+                    // Pass the activity_id directly to getActivity
+                    getActivity(eventData.activity_id);
+                }
             } else {
                 setErrorMessage("Por favor, inicia sesión para ver este evento.");
             }
         } catch (error) {
-            console.error('Error fetching event:', error);
-            setErrorMessage("Error al cargar el evento.");
+            console.error('Error al cargar el evento:', error);
+            setErrorMessage("Error al cargar el evento");
         }
     };
+
+    // Funcion para coger los datos de usuario
+    const getUser = async () => {
+        try {
+            // Recogemos los datos del usuario
+            const userResponse = await axios.get('/api/findUser', {
+                withCredentials: true
+            });
+            setUser(userResponse.data.user);
+
+        } catch (error) {
+            console.error('Error fetching event:', error);
+            setErrorMessage("Error al recoger los datos de usuario.");
+        }
+    }
+
+    // Función para coger la actividad
+    const getActivity = async (id) => {
+        try {
+            // Use the id parameter instead of activityId state
+            const response = await axios.get(`/api/findActivity/${id}`, {
+                withCredentials: true
+            });
+            setActivity(response.data.activity);
+        } catch (error) {
+            console.error('Error fetching activity:', error);
+            setErrorMessage("Error al cargar la actividad.");
+        }
+    }
 
     // *****FUNCION PARA CREAR RESERVA*****
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         // *****Confirmación*****
         let option = window.confirm("Seguro que quieres registarte como participante???")
         if (option === true) {
             try {
-                const response2 = await axios.post(`/api/newReserve/${eventId}`, {}, {
+                const response = await axios.post(`/api/newReserve/${eventId}`, {}, {
                     withCredentials: true
                 });
-                setSuccessMessage(response2.data.message)
+                setSuccessMessage(response.data.message)
 
                 setTimeout(() => {
                     window.location.href = `/events/${eventId}`
@@ -87,10 +141,10 @@ const Event = () => {
         let option = window.confirm("Seguro que quieres borrar este Evento???")
         if (option === true) {
             try {
-                const response2 = await axios.delete(`/api/deleteEvent/${eventId}`, {
+                const response = await axios.delete(`/api/deleteEvent/${eventId}`, {
                     withCredentials: true
                 });
-                setSuccessMessage(response2.data.message)
+                setSuccessMessage(response.data.message)
 
                 setTimeout(() => {
                     window.location.href = '/events'
@@ -98,9 +152,9 @@ const Event = () => {
 
             } catch (error) {
                 setErrorMessage(error.response?.data?.message || "Error al eliminar el evento")
-                setTimeout(() => {
-                    window.location.href = '/event'
-                }, 2000)
+                // setTimeout(() => {
+                //     window.location.href = '/event'
+                // }, 2000)
             }
         };
     };
@@ -112,17 +166,17 @@ const Event = () => {
             </div>
             <div className="container centerEvent">
                 <div className="eventTitle text-center"><p>EVENTO</p></div>
-                <div className="container table table-responsive tablaEvent w-100" style={{ display: userParticipating ? "block" : "none" }}>
+                <div className="container table table-responsive tablaEvent w-100" style={{ display: user.user_id ? "block" : "none" }}>
                     <div className="headEvent">
-                        <div className="reqEvent"><strong>Evento:</strong> {event.name}</div>
-                        <div className="reqEvent"><strong>Fecha del Evento:</strong> {new Date(event.dateActivity).toLocaleString('es')}</div>
-                        <div className="reqEvent"><strong>Actividad:</strong> {activity.name} ({activity.pay})</div>
-                        <div className="reqEvent"><strong>Descripción:</strong> {event.description}</div>
-                        <div className="reqEvent"><strong>Precio:</strong> {event.price}€</div>
+                        <div className="reqEvent"><strong>Evento:</strong> {evento.name}</div>
+                        <div className="reqEvent"><strong>Fecha del Evento:</strong> {new Date(evento.date_activity).toLocaleString('es')}</div>
+                        <div className="reqEvent"><strong>Actividad:</strong> {activity ? `${activity.name} (${activity.pay})` : 'Cargando...'}</div>
+                        <div className="reqEvent"><strong>Descripción:</strong> {evento.description}</div>
+                        <div className="reqEvent"><strong>Precio:</strong> {evento.price}€</div>
                         <div className="reqEvent"><strong>Participantes:</strong></div>
-                        {participating && participating.length > 0 ? (
-                            participating.map(e => (
-                                <div key={e._id} className="m-0 container">
+                        {reserves && reserves.length > 0 ? (
+                            reserves.map(e => (
+                                <div key={e.reserve_id} className="m-0 container">
                                     <div className="resEvent p-0">- {e.name} {e.surname}</div>
                                 </div>
                             ))
@@ -149,9 +203,9 @@ const Event = () => {
                 <div className="row justify-content-center m-4">
                     <div className="col-auto">
                         <form onSubmit={handleSubmit}>
-                            <button className="btn btn-success" type="submit" hidden={userParticipating || !role} >Inscribirme </button>
+                            <button className="btn btn-success" type="submit" hidden={isReserve == true} >Inscribirme </button>
                         </form>
-                        <p className="message" style={{ display: userParticipating ? "block" : "none" }}>Ya estás inscrito</p>
+                        <p className="message" style={{ display: isReserve == true ? "block" : "none" }}>Ya estás inscrito</p>
                     </div>
                 </div>
                 <div className="container eventButtons mb-3">
@@ -159,9 +213,9 @@ const Event = () => {
                         <div className="col-auto">
                             <Link className="btn btn-primary" type="button" to="/events">Volver</Link>
                         </div>
-                        {(userRole === 1 || currentUserId === event.userCreate) && (
+                        {(role === 1 || user.user_id === evento.user_create_id) && (
                             <div className="btn-group col-auto ">
-                                <Link className="btn btn-warning" type="button" key={event._id} to={`/events/updateEvent/${eventId}`}>Modificar</Link>
+                                <Link className="btn btn-warning" type="button" key={evento.event_id} to={`/events/updateEvent/${eventId}`}>Modificar</Link>
                                 <button className="btn btn-danger" onClick={deleteEvent}>Borrar </button>
                             </div>
                         )}

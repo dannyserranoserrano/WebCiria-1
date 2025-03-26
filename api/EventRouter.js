@@ -19,19 +19,12 @@ const pool = new Pool({
 // *****VISUALIZAMOS TODOS LOS EVENTOS*****
 EventRouter.get("/events", async (req, res) => {
     try {
-        const result = await pool.query(`
-            SELECT e.*, 
-                   a.name as activity_name,
-                   u.name as creator_name,
-                   COUNT(r.reserve_id) as total_reserves
-            FROM events e
-            LEFT JOIN activities a ON e.activity_id = a.activity_id
-            LEFT JOIN users u ON e.user_create = u.user_id
-            LEFT JOIN reserves r ON e.event_id = r.event_id
-            GROUP BY e.event_id, a.name, u.name
-            ORDER BY e.date_activity DESC
-        `);
+        // Añadimos logs para depuración
+        console.log('Obteniendo eventos...');
+        const result = await pool.query(`SELECT * FROM events`);
         const events = result.rows;
+        console.log(`Se encontraron ${events.length} eventos`);
+        console.log(events);
 
         return res.status(200).json({
             success: true,
@@ -39,7 +32,8 @@ EventRouter.get("/events", async (req, res) => {
             events
         });
     } catch (error) {
-        return res.status(500).json({
+        console.error('Error al obtener eventos:', error);
+        return res.status(404).json({
             success: false,
             message: error.message
         });
@@ -62,6 +56,7 @@ EventRouter.get("/findEvent/:eventId", async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            message: "Evento encontrado",
             event
         });
     } catch (error) {
@@ -88,25 +83,25 @@ EventRouter.post("/newEvent", auth, async (req, res) => {
         } else {
             // Iniciamos una transacción para asegurar que ambas operaciones se completen o ninguna
             const client = await pool.connect();
-            
+
             try {
                 await client.query('BEGIN');
-                
+
                 // Insertamos el evento
                 const eventResult = await client.query(
                     'INSERT INTO events (activity_id, name, description, price, user_create_id, date_activity) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
                     [activityId, name, description, price, id, dateActivity]
                 );
                 const newEvent = eventResult.rows[0];
-                
+
                 // Insertamos la relación en reserves
                 await client.query(
                     'INSERT INTO reserves (event_id, user_id) VALUES ($1, $2)',
                     [newEvent.event_id, id]
                 );
-                
+
                 await client.query('COMMIT');
-                
+
                 return res.status(200).json({
                     success: true,
                     message: `Evento ${name} creado correctamente`,
@@ -130,20 +125,21 @@ EventRouter.post("/newEvent", auth, async (req, res) => {
 EventRouter.put("/updateEvent/:eventId", auth, async (req, res) => {
     const { id } = req.user // Nos reconoce el usuario mediante el Tokken (auth.js)
     const { eventId } = req.params
-    const { activityId, name, description, price, dateActivity } = req.body
+    const { activity_id, name, description, price, date_activity } = req.body
 
     try {
         // *****Condición de si no eres el creador no puedes modificar*****
-        const userCreateId = await pool.query('SELECT * FROM events WHERE event_Id= $1', [eventId]);
+        const response = await pool.query('SELECT * FROM events WHERE event_id= $1', [eventId]);
+        const eventData = response.rows[0];
 
-        if (!userCreateId) {
+        if (!eventData) {
             return res.status(404).json({ success: false, message: "Evento no encontrado" })
-        } else if (userCreateId.user_create_id != id) {
-            res.status(400).json({ success: false, message: "No puedes modificar el evento porque no eres el creador" })
+        } else if (eventData.user_create_id != id) {
+            res.status(500).json({ success: false, message: "No puedes modificar el evento porque no eres el creador" })
         } else {
             await pool.query(
                 'UPDATE Events SET activity_id = $1, name = $2, description = $3, price = $4, date_activity = $5 WHERE event_id = $6',
-                [activityId, name, description, price, dateActivity, eventId]
+                [activity_id, name, description, price, date_activity, eventId]
             );
             return res.status(200).json({
                 success: true,
@@ -171,39 +167,43 @@ EventRouter.delete("/deleteEvent/:eventId", auth, authAdmin, async (req, res) =>
         if (!event) {
             return res.status(404).json({ success: false, message: "Evento no encontrado" });
         } else {
-            const name = event.name
-
-            // *****Borramos el evento*****
-            await pool.query('DELETE FROM events WHERE event_id = $1', [eventId]);
-
-            // *****Borramos el evento de File*****
-            const filesResults = await pool.query('SELECT * FROM files WHERE event_id = $1', [eventId]);
-            const files = filesResults.rows;
-
-            if (files.length > 0) {
-                // Actualizamos todos los archivos asociados en una sola consulta
+            // Start a transaction
+            await pool.query('BEGIN');
+            
+            try {
+                // *****Primero borramos las reservas de ese evento*****
+                await pool.query('DELETE FROM reserves WHERE event_id = $1', [eventId]);
+                
+                // *****Actualizamos los archivos asociados*****
                 await pool.query(
-                    'UPDATE files SET event_id = $1 WHERE event_id = $2',
-                    ["nulo", eventId]
+                    'UPDATE files SET event_id = NULL WHERE event_id = $1',
+                    [eventId]
                 );
+                
+                // *****Finalmente borramos el evento*****
+                await pool.query('DELETE FROM events WHERE event_id = $1', [eventId]);
+                
+                // Commit the transaction
+                await pool.query('COMMIT');
+
+                return res.json({
+                    success: true,
+                    message: "El Evento ha sido borrado junto con todas sus reservas"
+                });
+            } catch (error) {
+                // Rollback in case of error
+                await pool.query('ROLLBACK');
+                throw error;
             }
-
-            // *****Borramos las reservas de ese evento*****
-            await pool.query('DELETE FROM reserves WHERE event_id = $1', [eventId]);
-
-            return res.json({
-                success: true,
-                message: "El Evento ha sido borrado"
-            })
         }
-
     } catch (error) {
+        console.error('Error al eliminar evento:', error);
         return res.status(500).json({
             success: false,
             message: error.message
-        })
+        });
     }
-})
+});
 
 // *****EXPORTAMOS*****
 module.exports = EventRouter

@@ -9,17 +9,17 @@ const UpdateEvent = () => {
     const [userRole, setUserRole] = useState(null);
 
     const [updateEvent, setUpdateEvent] = useState({
-        activityId: "",
+        activity_id: "",
         name: "",
         description: "",
         price: "",
-        dateActivity: "",
+        date_activity: "",
     });
 
     const { eventId } = useParams();
     const [user, setUser] = useState({})
     const [event, setEvent] = useState({});
-    const [activity, setActivity] = useState({})
+    const [activity, setActivity] = useState([])
     const [activities, setActivities] = useState([]);
     const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -38,9 +38,25 @@ const UpdateEvent = () => {
             const response = await axios.get(`/api/findEvent/${eventId}`, {
                 withCredentials: true
             });
-            console.log(response.data.event.userCreate);
-            setEvent(response.data.event)
-            setActivity(response.data.event.activity)
+            const eventData = response.data.event;
+            setEvent(eventData);
+
+            if (eventData && eventData.activity_id) {
+                const activityResponse = await axios.get(`/api/findActivity/${eventData.activity_id}`, {
+                    withCredentials: true
+                });
+                const activityData = activityResponse.data.activity;
+                setActivity(activityData);
+                setUpdateEvent({
+                    ...updateEvent,
+                    activity_id: activityData.activity_id,
+                    name: eventData.name,
+                    description: eventData.description,
+                    price: eventData.price,
+                    date_activity: eventData.date_activity,
+                });
+
+            }
         } catch (error) {
             console.error('Error fetching event:', error);
             setErrorMessage("Error al cargar el evento");
@@ -53,12 +69,12 @@ const UpdateEvent = () => {
     // ******BUSQUEDA DE USUARIO*****
     const getUser = async () => {
         try {
-            const response3 = await axios.get('/api/findUser', {
+            const response = await axios.get('/api/findUser', {
                 withCredentials: true
             });
-            console.log(response3);
-            setUser(response3.data.user)
-            setUserRole(response3.data.user.role);
+            console.log(response);
+            setUser(response.data.user)
+            setUserRole(response.data.user.role);
         } catch (error) {
             console.error('Error fetching user:', error);
             setErrorMessage("Error al cargar el usuario");
@@ -66,34 +82,39 @@ const UpdateEvent = () => {
     }
 
     // ******BUSQUEDA DE ACTIVIDADES*****    
-        const getActivities = async () => {
-            try {
-                const response2 = await axios.get("/api/activities", {
-                    withCredentials: true
-                });
-                console.log(response2.data.activity);
-                setActivities(response2.data.activity);
-            } catch (error) {
-                console.error('Error fetching activities:', error);
-                setErrorMessage("Error al cargar las actividades");
-            }
+    
+    // Modificar la función getActivities
+    const getActivities = async () => {
+        try {
+            const response = await axios.get("/api/activities", {
+                withCredentials: true
+            });
+            // Asegurarse de que estamos guardando un array
+            const activitiesData = response.data.activities || [];
+            setActivities(activitiesData);
+        } catch (error) {
+            console.error('Error fetching activities:', error);
+            setErrorMessage("Error al cargar las actividades");
+            setActivities([]); // En caso de error, mantener un array vacío
         }
+    }
 
-// **********ACTUALIZAR EVENTO**********
-    if ((event.userCreate == user._id) || (userRole == 1)) {
+    // **********ACTUALIZAR EVENTO**********
+    if ((event.user_create_id == user.user_id) || (userRole == 1)) {
+
         const handleChange = (e) => {
             if (e.target.name === 'activityId') {
-                const selectedActivity = activities.find(a => a._id === e.target.value);
+                const selectedActivity = activities.find(a => a.activity_id === e.target.value);
                 if (selectedActivity && selectedActivity.pay === 'Gratis') {
                     setUpdateEvent({
                         ...updateEvent,
-                        activityId: e.target.value,
+                        activity_id: e.target.value,
                         price: '0'
                     });
                 } else {
                     setUpdateEvent({
                         ...updateEvent,
-                        activityId: e.target.value,
+                        activity_id: e.target.value,
                         price: ''
                     });
                 }
@@ -111,9 +132,7 @@ const UpdateEvent = () => {
             let option = window.confirm("Seguro que quieres modificar el Evento???")
             if (option === true) {
                 try {
-                    const response = await axios.put(
-                        `/api/updateEvent/${eventId}`,
-                        { ...updateEvent },
+                    const response = await axios.put(`/api/updateEvent/${eventId}`, { ...updateEvent },
                         {
                             withCredentials: true
                         }
@@ -135,6 +154,19 @@ const UpdateEvent = () => {
             };
         };
 
+        // Modificar la estructura del renderizado
+        if (!event.user_create_id && !user.user_id) {
+            return null; // O un componente de carga
+        }
+
+        if (event.user_create_id !== user.user_id && userRole !== 1) {
+            return (
+                <div className='dontM'>
+                    {/* ... código existente del mensaje de no autorizado ... */}
+                </div>
+            );
+        }
+
         return (
             <div className='updateEvent'>
                 <div className="header">
@@ -149,7 +181,7 @@ const UpdateEvent = () => {
                             <div className="reqUpdateEvent"><strong>Descripción:</strong> {event.description}</div>
                             <div className="reqUpdateEvent"><strong>Actividad:</strong> {activity.name} ({activity.pay})</div>
                             <div className="reqUpdateEvent"><strong>Precio:</strong> {event.price}€</div>
-                            <div className="reqUpdateEvent"><strong>Fecha del Evento:</strong> {new Date(event.dateActivity).toLocaleString('es')}</div>
+                            <div className="reqUpdateEvent"><strong>Fecha del Evento:</strong> {new Date(event.date_activity).toLocaleString('es')}</div>
                         </div>
                     </div>
 
@@ -168,42 +200,42 @@ const UpdateEvent = () => {
                                 </div>
                                 <div className='updateEventActivity'>
                                     <label className="form-label">Tipo de Actividad</label>
-                                    <select 
-                                        className="form-select" 
-                                        name="activityId" 
-                                        value={updateEvent.activityId} 
-                                        onChange={handleChange} 
-                                        aria-label="Default select example" 
+                                    <select
+                                        className="form-select"
+                                        name="activityId"
+                                        value={updateEvent.activity_id}
+                                        onChange={handleChange}
+                                        aria-label="Default select example"
                                         required
                                     >
                                         <option value="">Selecciona...</option>
                                         {activities.map(e => (
-                                            <option key={e._id} value={e._id}>{e.name} ({e.pay})</option>
+                                            <option key={e.activity_id} value={e.activity_id}>{e.name} ({e.pay})</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className='updateEventPrice'>
                                     <label className="form-label">Precio del Evento</label>
                                     <div className=" input-group">
-                                        <input 
-                                            type="number" 
-                                            className="form-control" 
-                                            name="price" 
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            name="price"
                                             value={updateEvent.price}
-                                            onChange={handleChange} 
-                                            placeholder={event.price} 
-                                            disabled={activities.find(a => a._id === updateEvent.activityId)?.pay === 'Gratis'}
+                                            onChange={handleChange}
+                                            placeholder={event.price}
+                                            disabled={activities.find(a => a.activity_id === updateEvent.activity_id)?.pay === 'Gratis'}
                                             min="0"
                                             step="0.01"
-                                            aria-label="Amount (to the nearest euro)" 
-                                            required 
+                                            aria-label="Amount (to the nearest euro)"
+                                            required
                                         />
                                         <span className="input-group-text">€</span>
                                     </div>
                                 </div>
                                 <div className='updateEventDate'>
                                     <label className="form-label">Fecha del Evento</label>
-                                    <input type="datetime-local" className="form-control" name="dateActivity" onChange={handleChange} placeholder={event.dateActivity} required />
+                                    <input type="datetime-local" className="form-control" name="dateActivity" onChange={handleChange} placeholder={event.date_activity} required />
                                 </div>
                             </div>
 
@@ -225,8 +257,8 @@ const UpdateEvent = () => {
                                     </div>
                                     <div className='col-auto'>
                                         <button className="btn btn-warning" type="submit"
-                                            disabled={!updateEvent.name.length || !updateEvent.description.length || !updateEvent.activityId.length ||
-                                                !updateEvent.price.length || !updateEvent.dateActivity.length}
+                                            disabled={!updateEvent.name || !updateEvent.description || !updateEvent.activity_id||
+                                                !updateEvent.price|| !updateEvent.date_activity}
                                         >Modificar</button>
                                     </div>
                                 </div>

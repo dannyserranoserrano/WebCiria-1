@@ -24,9 +24,9 @@ const AddEvent = () => {
         const response = await axios.get("/api/activities", {
           withCredentials: true
         });
-        console.log(response.data);
-        // Update this line to match your API response structure
-        setActivity(response.data.activities || []); // Changed from response.data.activity to response2.data.activities
+        console.log('Activities response:', response.data);
+        // Make sure we're accessing the correct property in the response
+        setActivity(response.data.activities || []); 
       } catch (error) {
         console.error('Error fetching activities:', error);
         setErrorMessage("Error al cargar las actividades");
@@ -35,9 +35,37 @@ const AddEvent = () => {
     getActivity();
   }, []);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      console.log('Submitting event data:', addEvent);
+      const response = await axios.post(
+        "/api/newEvent",
+        { ...addEvent },
+        {
+          withCredentials: true
+        }
+      );
+
+      setSuccessMessage(response.data.message);
+
+      setTimeout(() => {
+        navigate("/events");
+      }, 2000);
+    } catch (error) {
+      console.error('Error creating event:', error.response?.data || error.message);
+      setErrorMessage(error.response?.data?.message || "Error al crear el evento");
+      // Don't reload the page on error, just show the message
+      // setTimeout(() => {
+      //   window.location.href = "/events/addEvent";
+      // }, 2000);
+    }
+  };
+
   const handleChange = (e) => {
     if (e.target.name === 'activityId') {
-      const selectedActivity = activity.find(a => a._id === e.target.value);
+      const selectedActivity = activity.find(a => a.activity_id === e.target.value);
       if (selectedActivity && selectedActivity.pay === 'Gratis') {
         setAddEvent({
           ...addEvent,
@@ -58,31 +86,6 @@ const AddEvent = () => {
       });
     }
     console.log(addEvent);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.post(
-        "/api/newEvent",
-        { ...addEvent },
-        {
-          withCredentials: true
-        }
-      );
-
-      setSuccessMessage(response.data.message);
-
-      // setTimeout(() => {
-      //   navigate("/events");
-      // }, 2000);
-    } catch (error) {
-      setErrorMessage(error.response.data.message);
-      // setTimeout(() => {
-      //   window.location.href = "/events/addEvent";
-      // }, 2000);
-    }
   };
 
   return (
@@ -142,7 +145,7 @@ const AddEvent = () => {
 
             <div className="addEventPrice">
               <label className="form-label">Precio del Evento</label>
-              <div className=" input-group">
+              <div className="input-group">
                 <input
                   type="number"
                   className="form-control"
@@ -150,7 +153,7 @@ const AddEvent = () => {
                   onChange={handleChange}
                   placeholder="0"
                   value={addEvent.price}
-                  disabled={activity.find(a => a._id === addEvent.activityId)?.pay === 'Gratis'}
+                  disabled={activity.find(a => a.activity_id === addEvent.activityId)?.pay === 'Gratis'}
                   min="0"
                   step="0.01"
                   aria-label="Amount (to the nearest euro)"

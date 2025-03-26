@@ -4,7 +4,6 @@ const express = require("express");
 const { Pool } = require('pg'); // Importa el cliente pg
 const auth = require("../middleware/auth");
 const authAdmin = require("../middleware/authAdmin");
-const { CLIENT_RENEG_LIMIT } = require('tls');
 
 const ActivityRouter = express.Router();
 
@@ -20,16 +19,11 @@ const pool = new Pool({
 // *****VISUALIZAMOS LAS ACTIVIDADES*****
 ActivityRouter.get("/activities", auth, async (req, res) => {
     try {
-        const result = await pool.query(`
-            SELECT a.*, 
-                   COUNT(DISTINCT e.event_id) as total_events,
-                   COUNT(DISTINCT r.user_id) as total_participants
-            FROM activities a
-            LEFT JOIN events e ON a.activity_id = e.activity_id
-            LEFT JOIN reserves r ON e.event_id = r.event_id
-            GROUP BY a.activity_id
-        `);
+        console.log('Obteniendo actividades...');
+        const result = await pool.query(`SELECT * FROM activities`);
         const activities = result.rows;
+        console.log(`Se encontraron ${activities.length} actividades`);
+        console.log(activities);
 
         if (activities.length === 0) {
             return res.status(404).json({
@@ -40,10 +34,12 @@ ActivityRouter.get("/activities", auth, async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            count: activities.length,
             activities
         });
     } catch (error) {
-        return res.status(500).json({
+        console.error('Error al obtener actividades:', error);
+        return res.status(404).json({
             success: false,
             message: error.message
         });
@@ -53,28 +49,30 @@ ActivityRouter.get("/activities", auth, async (req, res) => {
 // *****VISUALIZAR UNA ACTIVIDAD*****
 ActivityRouter.get("/findActivity/:activityId", auth, async (req, res) => {
     const { activityId } = req.params;
+    console.log(activityId);
     try {
         const result = await pool.query('SELECT * FROM activities WHERE activity_id = $1', [activityId]);
-        const activity = result.rows[0]; // Obtiene el primer (y único) usuario
+        const activity = result.rows[0];
 
         if (!activity) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
-                message: "Activity not found"
+                message: "Actividad no encontrada"
             })
         }
+
         return res.status(200).json({
             success: true,
             message: "Actividad Encontrada",
             activity
-        })
+        });
     } catch (error) {
-        res.status(400).json({
+        return res.status(500).json({
             success: false,
             message: error.message
-        })
+        });
     }
-})
+});
 
 // *****CREAMOS NUEVA ACTIVIDAD*****
 ActivityRouter.post("/newActivity", auth, authAdmin, async (req, res) => {
@@ -118,63 +116,92 @@ ActivityRouter.post("/newActivity", auth, authAdmin, async (req, res) => {
 
 // ****MODIFICAR DATOS DE LA ACTIVIDAD****
 ActivityRouter.put("/updateActivity/:activityId", auth, authAdmin, async (req, res) => {
-    const { activityId } = req.params
-    const { name, pay } = req.body
+    const { activityId } = req.params;
+    const { name, pay } = req.body;
 
     try {
-        const activityResult = await pool.query('SELECT * FROM Activities WHERE activity_id = $1', [activityId])
-        const activity = activityResult.rows[0]
+        const activityResult = await pool.query('SELECT * FROM Activities WHERE activity_id = $1', [activityId]);
+        const activity = activityResult.rows[0];
 
         if (!activity) {
             return res.status(400).json({ success: false, message: "La actividad no existe" });
-        } else {
-            const { name, pay } = activity;
-            await pool.query(
-                'UPDATE activities SET name = $1, pay = $2 WHERE activity_id = $3',
-                [name, pay, activityId]
-            )
-
-            return res.status(200).json({
-                success: true,
-                message: ("La Actividad ha sido modificada")
-            });
         }
+
+        // Fix: Use the values from req.body instead of activity
+        await pool.query(
+            'UPDATE activities SET name = $1, pay = $2 WHERE activity_id = $3',
+            [name, pay, activityId]
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "La Actividad ha sido modificada"
+        });
 
     } catch (error) {
         return res.status(500).json({
             success: false,
             message: error.message
-        })
+        });
     }
-})
+});
 
 // ****BORRAMOS ACTIVIDAD*****
 ActivityRouter.delete("/deleteActivity/:activityId", auth, authAdmin, async (req, res) => {
-    const { activityId } = req.params
+    const { activityId } = req.params;
 
     try {
-        // Buscamos la actividad
-        const activityResult = await pool.query('SELECT * FROM activities WHERE activity_id = $1', [activityId])
-        const activity = activityResult.rows[0]
+        // First check if the activity exists
+        const activityResult = await pool.query('SELECT * FROM activities WHERE activity_id = $1', [activityId]);
+        const activity = activityResult.rows[0];
 
         if (!activity) {
-            return res.status(400).json({ success: false, message: "La actividad no existe" })
-        } else {
-            const { name, pay } = activity;
-            await pool.query('DELETE FROM activities WHERE activity_id = $1', [activityId])
+            return res.status(404).json({
+                success: false,
+                message: "Actividad no encontrada"
+            });
+        }
+
+        // Start transaction
+        await pool.query('BEGIN');
+
+        try {
+            // First, delete all reserves for this activity's events
+            await pool.query(`
+                DELETE FROM reserves 
+                WHERE event_id IN (
+                    SELECT event_id 
+                    FROM events 
+                    WHERE activity_id = $1
+                )
+            `, [activityId]);
+
+            // Then delete all events
+            await pool.query('DELETE FROM events WHERE activity_id = $1', [activityId]);
+
+            // Finally delete the activity
+            await pool.query('DELETE FROM activities WHERE activity_id = $1', [activityId]);
+
+            await pool.query('COMMIT');
+
             return res.status(200).json({
                 success: true,
-                message: `La actividad ${name} - ${pay} ha sido borrada`
-            })
-        };
+                message: `La actividad ${activity.name} ha sido eliminada junto con todos sus eventos y reservas asociados`
+            });
+
+        } catch (innerError) {
+            await pool.query('ROLLBACK');
+            throw innerError;
+        }
 
     } catch (error) {
-        return res.status(200).json({
+        console.error('Error en la eliminación:', error);
+        return res.status(500).json({
             success: false,
-            message: error.message
-        })
+            message: "Error al eliminar la actividad: " + error.message
+        });
     }
-})
+});
 
 // *****EXPORTAMOS*****
 module.exports = ActivityRouter

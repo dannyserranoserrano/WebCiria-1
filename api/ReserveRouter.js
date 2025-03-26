@@ -61,7 +61,6 @@ ReserveRouter.get("/reserves", auth, authAdmin, async (req, res) => {
 ReserveRouter.get("/myReserves", auth, async (req, res) => {
   try {
     const { id } = req.user;
-
     const results = await pool.query(`
       SELECT r.*, 
              e.name as event_name, e.date_activity,
@@ -72,7 +71,6 @@ ReserveRouter.get("/myReserves", auth, async (req, res) => {
       WHERE r.participating = $1
       ORDER BY e.date_activity DESC
     `, [id]);
-    
     const reserves = results.rows;
 
     if (reserves.length === 0) {
@@ -116,7 +114,7 @@ ReserveRouter.post("/newReserve/:eventId", auth, async (req, res) => {
 
     // Verificar si ya existe la reserva
     const existingReserve = await client.query(
-      'SELECT * FROM reserves WHERE event_id = $1 AND participating = $2',
+      'SELECT * FROM reserves WHERE event_id = $1 AND user_id = $2',
       [eventId, id]
     );
 
@@ -129,7 +127,7 @@ ReserveRouter.post("/newReserve/:eventId", auth, async (req, res) => {
 
     // Crear nueva reserva
     const newReserve = await client.query(
-      'INSERT INTO reserves (event_id, participating) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO reserves (event_id, user_id) VALUES ($1, $2) RETURNING *',
       [eventId, id]
     );
 
@@ -150,6 +148,42 @@ ReserveRouter.post("/newReserve/:eventId", auth, async (req, res) => {
   } finally {
     client.release();
   }
+});
+
+// *****VISUALIZAR RESERVAS DE UN EVENTO*****
+ReserveRouter.get("/findReserve/:eventId", async (req, res) => {
+    const { eventId } = req.params;
+    try {
+        const results = await pool.query(`
+            SELECT 
+                r.*,
+                u.name,
+                u.surname,
+                u.user_id
+            FROM reserves r
+            LEFT JOIN users u ON r.user_id = u.user_id
+            WHERE r.event_id = $1
+        `, [eventId]);
+        
+        const reserves = results.rows;
+
+        if (reserves.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No hay reservas solicitadas para este evento"
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            reserves
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 });
 
 // ****BORRAMOS RESERVA*****

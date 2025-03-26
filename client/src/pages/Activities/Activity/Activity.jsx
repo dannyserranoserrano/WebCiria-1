@@ -6,61 +6,61 @@ import axios from "axios";
 
 
 const Activity = () => {
-    const { activityId } = useParams()
+
+    const role = localStorage.getItem("role");
+    const { activityId } = useParams();
     const [activity, setActivity] = useState({})
+
     const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
     useEffect(() => {
-        const getActivity = async () => {
+        console.log("Activity ID:", activityId);
 
-            try {
-                const response = await axios.get(`/api/findActivity/${activityId}`, {
+        getActivity();
+    }, [activityId]);
 
+    const getActivity = async () => {
+        try {
+            if (role) {
+                const activityResponse = await axios.get(`/api/findActivity/${activityId}`, {
                     withCredentials: true
                 });
-                console.log(response);
-                setActivity(response.data.activity)
-            } catch (error) {
-                console.error('Error fetching event:', error);
-                if (error.response?.status === 401) {
-                    setErrorMessage("Por favor, inicia sesión para ver esta actividad.");
-                } else {
-                    setErrorMessage("Error al cargar la actividad.");
-                }
+                const activityData = activityResponse.data.activity;
+                setActivity(activityData);
+            } else {
+                setErrorMessage("Por favor, inicia sesión para ver esta actividad.");
             }
+        } catch (error) {
+            console.error('Error al cargar la actividad:', error);
+            setErrorMessage("Error al cargar la actividad");
         }
-        getActivity()
-    }, [activityId])
+    };
 
     // *****FUNCION PARA BORRAR*****
     const deleteActivity = async (e) => {
         e.preventDefault();
 
-        // *****Confirmación*****
-        let option = window.confirm("Seguro que quieres eliminar esta Actividad???")
+        let option = window.confirm("¡ATENCIÓN! Si eliminas esta actividad, también se eliminarán todos los eventos asociados. ¿Estás seguro de que quieres continuar?")
         if (option === true) {
-
-
             try {
-                // *****Hacemos la llamada*****
                 const response2 = await axios.delete(`/api/deleteActivity/${activityId}`, {
                     withCredentials: true
                 });
 
-                setSuccessMessage(response2.data.message)
-
+                setSuccessMessage(response2.data.message);
                 setTimeout(() => {
-                    window.location.href = '/activities'
-                }, 2000)
+                    window.location.href = '/activities';
+                }, 2000);
 
             } catch (error) {
-                setErrorMessage(error.response?.data?.message || "Error al eliminar la actividad")
-                setTimeout(() => {
-                    window.location.href = '/activity'
-                }, 2000)
+                if (error.response?.status === 409) {
+                    setErrorMessage("No se puede eliminar esta actividad porque tiene eventos asociados");
+                } else {
+                    setErrorMessage(error.response?.data?.message || "Error al eliminar la actividad");
+                }
             }
-        };
+        }
     };
     return (
         <div className=" activity">
@@ -71,8 +71,15 @@ const Activity = () => {
                 <div className="activityTitle text-center"><p>ACTIVIDAD</p></div>
                 <div className="container tablaActivity">
                     <div className="headActivity">
-                        <div ><strong>Actividad</strong> {activity.name}</div>
-                        <div><strong>Pago</strong> {activity.pay}</div>
+                        <div ><strong>Actividad: </strong> {activity.name}</div>
+                        <div>
+                            Esta actividad es {activity.pay === 'Pago' ? 
+                                <strong> de Pago</strong> : 
+                                activity.pay === 'Gratis' ? 
+                                <strong> Gratis</strong> : 
+                                <strong> {activity.pay}</strong>
+                            }
+                        </div>
                     </div>
                 </div>
 
@@ -96,7 +103,7 @@ const Activity = () => {
                         </div>
                         <div className="btn-group col-auto ">
                             <button className="btn btn-danger" onClick={deleteActivity}>Borrar </button>
-                            <Link className="btn btn-warning" type="button" key={activity._id} to={`/activities/updateActivity/${activity._id}`}>Modificar</Link>
+                            <Link className="btn btn-warning" type="button" key={activity.activity_id} to={`/activities/updateActivity/${activity.activity_id}`}>Modificar</Link>
                         </div>
                     </div>
                 </div>

@@ -10,22 +10,18 @@ const TablaEvents = () => {
     useEffect(() => {
         const getEvents = async () => {
             try {
-                const response = await axios.get("/api/events", {
-                    withCredentials: true
-                });
+                const response = await axios.get("/api/events", { withCredentials: true });
                 setEvents(response.data.events || []);
             } catch (error) {
-                console.error('Error fetching events:', error);
-                setError('Error loading events');
+                console.error('Error al cargar los eventos:', error);
+                setError('Error al cargar los eventos');
                 setEvents([]);
             }
         }
         getEvents();
     }, []);
 
-    if (error) {
-        return <div className="alert alert-danger">{error}</div>;
-    }
+    if (error) { return <div className="alert alert-danger">{error}</div>; }
 
     return (
         <div className="container tablaEvents mt-4 mb-4">
@@ -36,15 +32,15 @@ const TablaEvents = () => {
                 </div>
                 <div>
                     {Array.isArray(events) && events
-                        .filter(event => event && event.dateActivity && new Date(event.dateActivity) >= new Date())
-                        .sort((a, b) => new Date(a.dateActivity) - new Date(b.dateActivity))
+                        .filter(event => event && event.date_activity && new Date(event.date_activity) >= new Date())
+                        .sort((a, b) => new Date(a.date_activity) - new Date(b.date_activity))
                         .map(e => (
-                            <div key={e._id} className="bodyEvents">
-                                <Link to={`/events/${e._id}`} className="container linkEvents">
+                            <div key={e.event_id} className="bodyEvents">
+                                <Link to={`/events/${e.event_id}`} className="container linkEvents">
                                     <div className='link2Events'>
-                                        <div className='divEvents'>{e.name || 'Untitled Event'}</div>
+                                        <div className='divEvents'>{e.name || 'Sin Nombre'}</div>
                                         <div className='divDateAct'>
-                                            {e.dateActivity ? new Date(e.dateActivity).toLocaleString('es') : 'Date not set'}
+                                            {e.date_activity ? new Date(e.date_activity).toLocaleString('es') : 'Sin Fecha'}
                                         </div>
                                     </div>
                                 </Link>

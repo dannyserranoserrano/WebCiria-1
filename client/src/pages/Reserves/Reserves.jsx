@@ -11,15 +11,17 @@ const Reserves = () => {
         <Header />
       </div>
       <div className="container centerReserves">
-        <TablaReserves />
+        <div className="reservesTitle text-center"><p>RESERVAS</p></div>
+        <div className="container reservesTable">
+          <TablaReserves />
+        </div>
         {/* *****Buttons***** */}
         <div className="container reservesButtons">
           <div className="row justify-content-start">
-            <div className="addReserves col-auto">
-              <Link className="btn btn-sm btn-primary " type="button" to="/">
-                Volver
-              </Link>
+            <div className="volverReserves col-auto">
+              <Link className="btn btn-sm btn-primary " type="button" to="/">Volver</Link>
             </div>
+
           </div>
         </div>
       </div>

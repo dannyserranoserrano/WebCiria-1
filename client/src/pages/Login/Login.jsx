@@ -58,7 +58,7 @@ const Login = () => {
                     <div className='row justify-content-around'>
                         <div className='container'>
                             <div className="table table-responsive">
-                                <div className='container inputsRegister'>
+                                <div className='container inputsLogin'>
                                     <div className="loginEmail">
                                         <label className="form-label">Email</label>
                                         <div className="input-group">
@@ -87,7 +87,7 @@ const Login = () => {
 
                             {/* *****Buttons***** */}
                             <div className="container loginButtons">
-                                <div className=' row justify-content-between '>
+                                <div className=' row justify-content-center '>
                                 <div className="col-auto">
                                         <Link className="btn btn-primary" type="button" to="/">Volver</Link>
                                     </div>

@@ -108,7 +108,7 @@ const Register = () => {
 
                         {/* *****Buttons***** */}
                         <div className="container registerButtons">
-                            <div className="row justify-content-between">
+                            <div className="row justify-content-center">
                                 <div className="col-auto">
                                     <Link className="btn btn-primary" type="button" to="/">Volver</Link>
                                 </div>

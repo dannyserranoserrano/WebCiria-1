@@ -6,12 +6,9 @@ import TablaEvents from '../../components/tablaEvents/TablaEvents'
 
 
 const Events = () => {
-
     const role = localStorage.getItem("role") || null;
-
-
+    
     const Eventos = () => (
-
         <div className="events">
             <div className="header">
                 <Header />
@@ -23,7 +20,7 @@ const Events = () => {
                 </div>
                 {/* *****Buttons***** */}
                 <div className="container eventsButtons">
-                    <div className="row justify-content-start">
+                    <div className="row justify-content-center">
                         <div className="volverEvents col-auto">
                             <Link className="btn btn-primary " type="button" to="/">Volver</Link>
                         </div>
@@ -45,7 +42,7 @@ const Events = () => {
                 </div>
                 {/* *****Buttons***** */}
                 <div className="container eventsButtons">
-                    <div className="row justify-content-between">
+                    <div className="row justify-content-center">
                         <div className="volverEvents col-auto">
                             <Link className="btn btn-primary " type="button" to="/">Volver</Link>
                         </div>

@@ -11,7 +11,9 @@
 }
 
 .centerEvents {
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 50px;
+
 
 }
 
@@ -21,13 +23,14 @@
 }
 
 .eventsTable {
-    max-height: 500px;
+    max-height: 300px;
     max-width: 600px;
     margin-top: 20px;
+    padding-bottom: 280px;
 }
 
 .eventsButtons {
-    margin-top: 9vh;
+    margin-top: 12vh;
 }
 
 
@@ -48,6 +51,6 @@
     }
 
     .eventsButtons {
-        margin-top: 26vh;
+        margin-top: 20vh;
     }
 }

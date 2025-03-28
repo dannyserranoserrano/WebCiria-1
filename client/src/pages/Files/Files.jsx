@@ -20,7 +20,7 @@ const Files = () => {
                 </div>
                 {/* *****Buttons***** */}
                 <div className="container filesButtons">
-                    <div className=" row justify-content-between">
+                    <div className=" row justify-content-center">
                          <div className="col-auto">
                             <Link className="btn btn-primary" type="button" to="/">Volver</Link>
                         </div>

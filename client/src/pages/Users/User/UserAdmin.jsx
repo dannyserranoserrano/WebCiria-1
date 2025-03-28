@@ -39,12 +39,12 @@ const UserAdmin = () => {
 
             // *****Hacemos la llamada*****  
             try {
-                const response2 = await axios.delete(
+                const response = await axios.delete(
                     `/api/deleteUser/${userId}`, {
                     withCredentials: true
                 })
-                console.log(response2);
-                setSuccessMessage(response2.data.message)
+                console.log(response);
+                setSuccessMessage(response.data.message)
 
                 setTimeout(() => {
                     window.location.href = '/users'

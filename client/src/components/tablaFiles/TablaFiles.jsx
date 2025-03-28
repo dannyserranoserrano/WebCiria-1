@@ -3,41 +3,51 @@ import axios from 'axios'
 import './tablaFiles.css'
 import { Link } from 'react-router-dom'
 
-
 const TablaFiles = () => {
-
     const [files, setFiles] = useState([])
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const getFiles = async () => {
-            const response = await axios.get("/api/files", {
-                withCredentials: true
-            })
-            console.log(response);
-            setFiles(response.data.files);
+            try {
+                setLoading(true)
+                const response = await axios.get("/api/files", {
+                    withCredentials: true
+                })
+                setFiles(response.data.files || [])
+            } catch (error) {
+                console.error('Error fetching files:', error)
+                setError('Error al cargar las imágenes')
+            } finally {
+                setLoading(false)
+            }
         }
-        getFiles();
-    }, []);
+        getFiles()
+    }, [])
+
+    if (loading) return <div>Cargando imágenes...</div>
+    if (error) return <div className="alert alert-danger">{error}</div>
 
     return (
-        <div className=" row justify-content-around">
+        <div className="row justify-content-around">
             <div id="carouselExampleFade" className="col-auto carrusel carousel slide carousel-fade w-100" data-bs-ride="carousel">
                 <div className="carousel-inner">
-                    <div className="carousel-item active ">
+                    <div className="carousel-item active">
                         <div className="carousel-image-container">
-                            <img src="./images/DSC_0477.JPG" className="d-block w-100 imagen" alt="Principal" />
+                            <img src="/images/DSC_0477.JPG" className="d-block w-100 imagen" alt="Principal" />
                         </div>
                     </div>
-                    {files.map(e => (
-                        <Link key={e._id} to={`/files/${e._id}`} className="carousel-item ">
+                    {files.map(file => (
+                        <div key={file.file_id} className="carousel-item">
                             <div className="carousel-image-container">
                                 <img
-                                    src={e.image.url}
+                                    src={file.url}
                                     className="d-block w-100 imagen"
-                                    alt={e?.fileName || 'Imagen'}
+                                    alt={file.filename || 'Imagen'}
                                 />
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
                 <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
@@ -53,5 +63,4 @@ const TablaFiles = () => {
     )
 }
 
-
-export default TablaFiles;
+export default TablaFiles

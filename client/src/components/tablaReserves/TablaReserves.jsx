@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./tablaReserves.css";
-import { Alert } from "reactstrap";
 
 const TablaReserves = () => {
   const role = localStorage.getItem("role");
-  const [reserves, setReserves] = useState([]);
-  const [error, setError] = useState("");
+  const [reservas, setReservas] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (role == 0) {
@@ -17,138 +17,113 @@ const TablaReserves = () => {
     }
   }, [role]);
 
-  // ****** RECUPERAR RESERVAS USUARIO ******
+  // ****** RECUPERAR RESERVAS USUARIO (Role => 0) ******
   const getReservesUser = async () => {
-
     try {
       const response = await axios.get("/api/myReserves", {
         withCredentials: true,
       });
-      if (response.data && response.data.success && response.data.reserves) {
-        setReserves(response.data.reserves);
-        setError("");
-        console.log("reservas " + reserves)
+
+      const reservasData = response.data.reserves;
+      console.log("Retorno de Servidor:", reservasData);
+
+      if (reservasData && Array.isArray(reservasData) && reservasData.length > 0) {
+        setReservas(reservasData);
+        setErrorMessage("");
       } else {
-        setError("No hay reservas solicitadas");
-        setReserves([]);
+        setErrorMessage("No estás inscrit@ en ningún evento");
+        setReservas([]);
       }
     } catch (error) {
-      console.error("Error al obtener las reservas:", error);
-      setError("Error al cargar las reservas");
-      setReserves([]);
+      console.error("Error detallado:", error.response || error);
+      setErrorMessage("Error al cargar las reservas" + (error.response?.data?.message || error.message));
+      setReservas([]);
     }
   };
 
-  // ****** RECUPERAR TODAS LAS RESERVAS ******
+  // ****** RECUPERAR TODAS LAS RESERVAS (Role => 1) ******
   const getReservesAdmin = async () => {
     try {
       const response = await axios.get("/api/reserves", {
         withCredentials: true,
       });
-      if (response.data && response.data.success && response.data.reserves) {
-        setReserves(response.data.reserves);
-        setError("");
-        console.log(reserves)
+
+      const reservasData = response.data.reserves;
+      console.log('Retorno de Servidor:', reservasData);
+
+      if (reservasData && Array.isArray(reservasData) && reservasData.length > 0) {
+        setReservas(reservasData);
+        setErrorMessage("");
       } else {
-        setError("No hay reservas solicitadas");
-        console.log("No hay reservas");
-        setReserves([]);
+        setErrorMessage("No estás inscrit@ en ningún evento");
+        setReservas([]);
       }
+
     } catch (error) {
-      console.error("Error al obtener las reservas:", error);
-      console.log("Error al cargar las reservas");
-      setError("Error al cargar las reservas");
-      setReserves([]);
+      console.error("Error detallado:", error.response || error);
+      setErrorMessage("Error al cargar las reservas: " + (error.response?.data?.message || error.message));
+      setReservas([]);
     }
   };
 
-  // ****** ELIMINAR RESERVA ******
+  // Ejecutar el borrado de una reserva
   const handleDeleteReserve = async (reserveId) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta reserva?')) {
       try {
-        const response = await axios.delete(`/api/deleteReserve/${reserveId}`, {
-          withCredentials: true,
-        });
-        if (response.data && response.data.success) {
+        const response = await axios.delete(`/api/deleteReserve/${reserveId}`, { withCredentials: true, })
+        if (response.data.success) {
+          // Actualizar la lista después de eliminar
           if (role == 0) {
-            getReservesUser();
+            setSuccessMessage(response.data.message)
+            await getReservesUser();
           } else if (role == 1) {
-            getReservesAdmin();
+            setSuccessMessage(response.data.message)
+            await getReservesAdmin();
           }
         } else {
-          setError("Error al eliminar la reserva");
+          setErrorMessage(response.data.message || "Error al eliminar la reserva");
         }
       } catch (error) {
-        console.error("Error al eliminar la reserva:", error);
-        setError("Error al eliminar la reserva");
+        console.error("Error al eliminar:", error.response || error);
+        setErrorMessage("Error al eliminar la reserva: " + (error.response?.data?.message || error.message));
       }
     }
   };
 
   return (
-    <div className="container tablaReserves col auto mt-4 mb-4">
-      <div className="reservesTitle text-center">
-        <h1>RESERVAS</h1>
-      </div>
-      <div>
-        <div className="container">
-          <div className="headReserves table-responsive">
-            <table className="table table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <strong>Evento</strong>
-                  </th>
-                  <th scope="col">
-                    <strong>Fecha</strong>
-                  </th>
-                  <th scope="col">
-                    <strong>Participante</strong>
-                  </th>
-                  <th scope="col">
-                    <strong></strong>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {reserves
-                  .filter(reserve => reserve && reserve.event.dateActivity && new Date(reserve.event.dateActivity) >= new Date())
-                  .sort((a, b) => new Date(a.dateActivity) - new Date(b.dateActivity))
-                  .map((reserve) => (
-                    <tr key={reserve._id}>
-                      <td>
-                        {reserve.event ? (
-                          reserve.event.name
-                        ) : (
-                          <span className="text-danger">
-                            Evento no disponible
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        {reserve.event && reserve.event.dateActivity ?
-                          new Date(reserve.event.dateActivity).toLocaleString('es')
-                          : 'Fecha no disponible'
-                        }
-                      </td>
-                      <td>
-                        {reserve.participating.name}{" "}
-                        {reserve.participating.surname}
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleDeleteReserve(reserve._id)}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>{error && <div className="message">{error}</div>}
+    <div>
+      <div className="container tablaReserves mt-4 mb-4">
+        <div className="headReserves table table-responsive mb-0">
+          <div className="head2Events m-2">
+            <div><strong>Evento</strong></div>
+            <div><strong>Fecha</strong></div>
+            <div><strong>Participante</strong></div>
+            <div><strong>Borrar</strong></div>
+          </div>
+          <div>
+            {Array.isArray(reservas) && reservas
+              .filter(reserva => { return reserva && new Date(reserva.date_activity) >= new Date() })
+              .sort((a, b) => new Date(a.date_activity) - new Date(b.date_activity))
+              .map(reserva => (
+                <div key={reserva.reserve_id} className="bodyReserves">
+                  <div className="divReserves">
+                    <div className="divReserve">{reserva.event_name || 'Evento no disponible'}</div>
+                    <div className="divDateAct">{reserva.date_activity ? new Date(reserva.date_activity).toLocaleString('es') : 'Fecha no disponible'}</div>
+                    <div>{reserva.user_name || ''}{" "}{reserva.user_surname || ''}</div>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteReserve(reserva.reserve_id)}>Eliminar</button>
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
+      </div>
+      {/* *****AVISOS DE ERRORES***** */}
+      <div className="message_ok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: successMessage ? "block" : "none" }}>
+        <div>{successMessage}</div>
+      </div>
+      <div className="message_ok shadow-lg p-3 m-3 bg-body rounded border text-center" style={{ display: errorMessage ? "block" : "none" }}>
+        <div>{errorMessage}</div>
       </div>
     </div>
   );

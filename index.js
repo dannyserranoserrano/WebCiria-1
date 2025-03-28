@@ -15,6 +15,9 @@ const ReserveRouter = require("./api/ReserveRouter")
 const AuthRouter = require("./api/AuthRouter")
 
 const fs = require("fs") //Se usa para tener base de datos e local
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
 
 // *****SE USA PARA METER DATOS*****
 app.use(express.json({
@@ -26,6 +29,9 @@ app.use(express.urlencoded({
 app.use(fileUpload({
     useTempFiles: true
 }))
+// Add the file router
+app.use('/api', FileRouter);
+
 //*****LLAMAMOS A CORS para evitar bloqueos de seguridad***** */
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' ? 'https://villadeciria.es' : 'http://localhost:3000',

@@ -48,7 +48,7 @@ EventRouter.get("/findEvent/:eventId", async (req, res) => {
         const event = result.rows[0]; // Obtiene el primer (y único) evento
 
         if (!event) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
                 message: "Evento no encontrado"
             })
@@ -76,7 +76,7 @@ EventRouter.post("/newEvent", auth, async (req, res) => {
     try {
         // *****COMPROBAMOS ERRORES*****
         if (!activityId || !description || !price || !dateActivity) {
-            return res.json({
+            return res.status(400).json({
                 success: false,
                 message: "No has completado todos los campos"
             })

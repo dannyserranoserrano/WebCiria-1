@@ -6,7 +6,7 @@ import "./updateEvent.css"
 
 
 const UpdateEvent = () => {
-    const [userRole, setUserRole] = useState(null);
+    const role = localStorage.getItem("role");
 
     const [updateEvent, setUpdateEvent] = useState({
         activity_id: "",
@@ -74,7 +74,6 @@ const UpdateEvent = () => {
             });
             console.log(response);
             setUser(response.data.user)
-            setUserRole(response.data.user.role);
         } catch (error) {
             console.error('Error fetching user:', error);
             setErrorMessage("Error al cargar el usuario");
@@ -100,7 +99,7 @@ const UpdateEvent = () => {
     }
 
     // **********ACTUALIZAR EVENTO**********
-    if ((event.user_create_id == user.user_id) || (userRole == 1)) {
+    if ((event.user_create_id == user.user_id) || (role == 1)) {
 
         const handleChange = (e) => {
             if (e.target.name === 'activityId') {
@@ -154,18 +153,6 @@ const UpdateEvent = () => {
             };
         };
 
-        // Modificar la estructura del renderizado
-        if (!event.user_create_id && !user.user_id) {
-            return null; // O un componente de carga
-        }
-
-        if (event.user_create_id !== user.user_id && userRole !== 1) {
-            return (
-                <div className='dontM'>
-                    {/* ... código existente del mensaje de no autorizado ... */}
-                </div>
-            );
-        }
 
         return (
             <div className='updateEvent'>

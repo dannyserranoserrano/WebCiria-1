@@ -1,36 +1,38 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken')
+
 const auth = (req, res, next) => {
-  try {
-    const token = req.cookies.token;
-    console.log("Token from cookie:", token);
+    try {
+        // Check for token in different places
+        const token = req.header("Authorization") || 
+                     req.cookies.token || 
+                     req.headers['x-access-token'] ||
+                     (req.headers.authorization && req.headers.authorization.split(' ')[1]);
 
-    if (!token) {
-      return res.status(401).send({
-        success: false,
-        message: "No authentication token found",
-      });
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Authentication: No token provided"
+            })
+        }
+
+        // Verify token
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+            if (err) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Invalid Authentication: Token verification failed"
+                })
+            }
+
+            req.user = user
+            next()
+        })
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        })
     }
+}
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        console.log("Token verification error:", err);
-        return res.status(401).send({
-          success: false,
-          message: "Invalid or expired token",
-        });
-      }
-
-      console.log("Verified user:", user);
-      req.user = user;
-      next();
-    });
-  } catch (error) {
-    console.error("Auth middleware error:", error);
-    return res.status(500).send({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-module.exports = auth;
+module.exports = auth

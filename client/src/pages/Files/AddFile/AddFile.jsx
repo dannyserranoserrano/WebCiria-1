@@ -21,11 +21,11 @@ const AddFile = () => {
 
   useEffect(() => {
     const getEvents = async () => {
-      const response2 = await axios.get("/api/events", {
+      const response = await axios.get("/api/events", {
         withCredentials: true
       });
-      //console.log(response2.data.events);
-      setEvents(response2.data.events);
+      //console.log(response.data.events);
+      setEvents(response.data.events);
     };
     getEvents();
   }, []);
@@ -78,28 +78,31 @@ const AddFile = () => {
 
     try {
       const formData = new FormData();
-      // Ensure all fields are properly added to FormData
       formData.append('fileName', addFile.fileName);
       formData.append('description', addFile.description);
       formData.append('date', addFile.date);
       formData.append('event', addFile.event);
-      formData.append('file', addFile.image); // Change 'image' to 'file' to match server expectation
+      formData.append('file', addFile.image);
 
+      // Get the token from localStorage
+      const token = localStorage.getItem('firstLogin');
+      
       const response = await axios.post(
         "/api/newFile",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            'Authorization': token
           },
           withCredentials: true
         }
       );
 
       setSuccessMessage(response.data.message);
-      setTimeout(() => {
-        navigate("/files");
-      }, 2000);
+      // setTimeout(() => {
+      //   navigate("/files");
+      // }, 2000);
     } catch (error) {
       console.error('Error uploading file:', error);
       setErrorMessage(
@@ -158,9 +161,9 @@ const AddFile = () => {
                 aria-label="Default select example"
               >
                 <option value="">Selecciona...</option>
-                {events.map((e) => (
-                  <option key={e._id} value={e._id}>
-                    {e.name}
+                {events.map((event) => (
+                  <option key={event.event_id} value={event.event_id}>
+                    {event.name}
                   </option>
                 ))}
               </select>

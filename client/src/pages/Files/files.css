@@ -1,16 +1,15 @@
 .files {
     background-color: rgb(210, 211, 211);
-   
 }
 
 .filesTitle {
-    margin-top: 30px;
+    margin-top: 1vh;
     font-size: 40px;
     
 }
 
 .home{
-    padding: 40px;
+    padding: 3vh;
     height: auto;
 }
 

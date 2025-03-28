@@ -22,7 +22,7 @@ ReserveRouter.get("/reserves", auth, authAdmin, async (req, res) => {
       SELECT 
         r.reserve_id,
         r.event_id,
-        r.participating,
+        r.user_id,
         r.created_at,
         e.name as event_name, 
         e.date_activity,
@@ -30,7 +30,7 @@ ReserveRouter.get("/reserves", auth, authAdmin, async (req, res) => {
         u.surname as user_surname
       FROM reserves r
       LEFT JOIN events e ON r.event_id = e.event_id
-      LEFT JOIN users u ON r.participating = u.user_id
+      LEFT JOIN users u ON r.user_id = u.user_id
       ORDER BY e.date_activity DESC
     `);
     const reserves = results.rows;
@@ -59,31 +59,28 @@ ReserveRouter.get("/reserves", auth, authAdmin, async (req, res) => {
 
 // *****VISUALIZAMOS TODAS MIS RESERVAS (user)*****
 ReserveRouter.get("/myReserves", auth, async (req, res) => {
+  const { id } = req.user;
+      console.log("Id de usuario: ", id)
+
   try {
-    const { id } = req.user;
     const results = await pool.query(`
       SELECT r.*, 
              e.name as event_name, e.date_activity,
              u.name as user_name, u.surname as user_surname
       FROM reserves r
       LEFT JOIN events e ON r.event_id = e.event_id
-      LEFT JOIN users u ON r.participating = u.user_id
-      WHERE r.participating = $1
+      LEFT JOIN users u ON r.user_id = u.user_id
+      WHERE r.user_id = $1
       ORDER BY e.date_activity DESC
     `, [id]);
     const reserves = results.rows;
-
-    if (reserves.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No tienes reservas activas"
-      });
-    }
+    console.log("Reservas: ", reserves)
 
     return res.status(200).json({
       success: true,
       reserves
     });
+    
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -186,7 +183,7 @@ ReserveRouter.get("/findReserve/:eventId", async (req, res) => {
     }
 });
 
-// ****BORRAMOS RESERVA*****
+// ****BORRAMOS RESERVA (Usuario)*****
 ReserveRouter.delete("/deleteReserve/:reserveId", auth, async (req, res) => {
   const client = await pool.connect();
   try {
@@ -197,7 +194,7 @@ ReserveRouter.delete("/deleteReserve/:reserveId", auth, async (req, res) => {
 
     // Verificar si existe la reserva y pertenece al usuario
     const reserveResult = await client.query(
-      'SELECT * FROM reserves WHERE reserve_id = $1 AND participating = $2',
+      'SELECT * FROM reserves WHERE reserve_id = $1 AND user_id = $2',
       [reserveId, id]
     );
 

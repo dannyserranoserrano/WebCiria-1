@@ -51,6 +51,7 @@ UserRouter.get("/users", auth, authAdmin, async (req, res) => {
 // // *****VISUALIZAMOS DATOS DE UN SOLO USUARIO*****
 UserRouter.get("/findUser/:userId", auth, authAdmin, async (req, res) => {
     const { userId } = req.params;
+    console.log(userId);
     try {
         const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
         const user = result.rows[0]; // Obtiene el primer (y único) usuario
@@ -245,7 +246,7 @@ UserRouter.put("/updateUser", auth, async (req, res) => {
 
 // // ****BORRAMOS DATOS DE UN USUARIO*****
 
-UserRouter.delete("/deleteUser/:userId", auth, async (req, res) => {
+UserRouter.delete("/deleteUser/:userId", auth, authAdmin, async (req, res) => {
     const { userId } = req.params;
 
     try {
@@ -261,7 +262,7 @@ UserRouter.delete("/deleteUser/:userId", auth, async (req, res) => {
             // Enviar correo de despedida (adapta esto a tu lógica)
             byeEmail.sendByeEmail(name, surname, city, email);
 
-            // Eliminar reservas del usuario (participating)
+            // Eliminar reservas del usuario (user_id)
             await pool.query('DELETE FROM reserves WHERE user_id = $1', [userId]);
 
             // Eliminar eventos creados por el usuario (userCreate)
@@ -306,7 +307,7 @@ UserRouter.delete("/deleteUser", auth, async (req, res) => {
             // Enviar correo de despedida (adapta esto a tu lógica)
             byeEmail.sendByeEmail(name, surname, city, email);
 
-            // Eliminar reservas del usuario (participating)
+            // Eliminar reservas del usuario (user_id)
             await pool.query('DELETE FROM reserves WHERE user_id = $1', [id]);
 
             // Eliminar eventos creados por el usuario (userCreate)

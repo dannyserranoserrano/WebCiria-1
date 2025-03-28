@@ -23,12 +23,12 @@ const Logout = () => {
             document.cookie = `token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
 
             // Force redirect to ensure clean state
-            window.location.href = '/login';
+            window.location.href = '/';
         })
         .catch(error => {
             console.error('Error during logout:', error);
             // Redirect anyway to ensure user is logged out
-            window.location.href = '/login';
+            window.location.href = '/';
         });
     };
     return (
@@ -43,7 +43,7 @@ const Logout = () => {
                 </div>
                 {/* *****Buttons***** */}
                 <div className="container buttonsLogout">
-                    <div className=' row justify-content-between'>
+                    <div className=' row justify-content-center'>
                         <div className="col-auto">
                             <Link className="btn btn-primary" type="button" to="/">Volver</Link>
                         </div>

@@ -4,9 +4,10 @@
     box-sizing: border-box;
 }
 
-.register{
+.register {
     background-color: rgb(210, 211, 211);
-    padding-bottom: 10px;
+    width: 100%;
+padding-bottom: 6vh;
 }
 
 .registerTitle {
@@ -17,12 +18,12 @@
     border: 2px solid black;
     border-radius: 20px;
     padding: 20px;
-    margin-top: 8vh;
+    margin-top: 1vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
     background-color: rgb(241, 231, 231);
-    max-width: 600px; 
+    max-width: 600px;
 }
 
 .registerName {
@@ -50,14 +51,14 @@
     margin-bottom: 12px;
 }
 
-.registerButtons{
-    margin-top: 17vh;
+.registerButtons {
+    margin-top: 2vh;
     width: 100%;
 }
 
 @media only screen and (max-width:767px) {
 
-    .register{
+    .register {
         padding-bottom: 10px;
     }
 

@@ -5,12 +5,12 @@
 }
 
 .eventTitle {
-    margin-top: 10px;
+    margin-top: 1vh;
     font-size: 40px;
 }
 
 .centerEvent {
-    padding: 10px;
+    padding: 1vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -25,7 +25,7 @@
     flex-direction: column;
     max-width: 700px;
     max-height: 310px;
-    padding: 20px;
+    padding: 10px;
     margin-top: 100px;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .eventButtons {
-    margin-top: 17vh;
+    margin: 2vh;
     width: 100%;
 }
 

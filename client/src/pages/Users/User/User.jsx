@@ -78,6 +78,7 @@ const User = () => {
                             <div className="headUser"><strong>Apellido:</strong>{user.surname}</div>
                             <div className="headUser"><strong>Ciudad:</strong>{user.city}</div>
                             <div className="headUser"><strong>Email:</strong>{user.email}</div>
+                            <div className="headUser"><strong>Tipo de permisos:</strong>{(user.role == 1 ? "Administrador" : user.role == 0 ? "Usuario" : "Visitante")}</div>
                         </div>
                     </div>
 

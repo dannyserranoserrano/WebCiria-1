@@ -196,25 +196,22 @@ const Event = () => {
                     <div className="message" style={{ display: errorMessage ? "block" : "none" }}>
                         <div> {errorMessage} </div>
                     </div>
+                    <p className="message " style={{ display: isReserve == true ? "block" : "none" }}>Ya estás inscrito</p>
                 </div>
 
 
                 {/* *****Buttons***** */}
-                <div className="row justify-content-center m-4">
-                    <div className="col-auto">
+                <div className="container eventButtons">
+                    <div className="row justify-content-center"> 
+                        <div className="volverEvent col-auto">
+                            <Link className="btn btn-primary" type="button" to="/events">Volver</Link>
+                        
                         <form onSubmit={handleSubmit}>
                             <button className="btn btn-success" type="submit" hidden={isReserve == true} >Inscribirme </button>
                         </form>
-                        <p className="message" style={{ display: isReserve == true ? "block" : "none" }}>Ya estás inscrito</p>
-                    </div>
-                </div>
-                <div className="container eventButtons mb-3">
-                    <div className=" row justify-content-between">
-                        <div className="col-auto">
-                            <Link className="btn btn-primary" type="button" to="/events">Volver</Link>
                         </div>
                         {(role === 1 || user.user_id === evento.user_create_id) && (
-                            <div className="btn-group col-auto ">
+                            <div className="btn-group col-auto ">              
                                 <Link className="btn btn-warning" type="button" key={evento.event_id} to={`/events/updateEvent/${eventId}`}>Modificar</Link>
                                 <button className="btn btn-danger" onClick={deleteEvent}>Borrar </button>
                             </div>

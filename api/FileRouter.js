@@ -1,4 +1,5 @@
 // *****IMPORTAMOS*****
+require('dotenv').config();
 const express = require("express");
 const { Pool } = require('pg'); // Importa el cliente pg
 const auth = require("../middleware/auth");
@@ -28,44 +29,28 @@ cloudinary.config({
 // *****VISUALIZAR TODOS LOS ARCHIVOS*****
 FileRouter.get("/files", async (req, res) => {
   try {
-    const results = await pool.query(`
-      SELECT f.*, e.name as event_name, u.name as user_name 
-      FROM files f 
-      LEFT JOIN events e ON f.event_id = e.event_id 
-      LEFT JOIN users u ON f.user_id = u.user_id
-    `);
-    const files = results.rows;
-
-    if (files.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No hay archivos disponibles"
-      });
-    }
+    const result = await pool.query('SELECT * FROM files');
+    const files = result.rows;
 
     return res.status(200).json({
       success: true,
-      files,
+      count: files.length,
+      files
     });
   } catch (error) {
-    return res.status(500).json({
+    console.error('Error al obtener archivos:', error);
+    return res.status(404).json({
       success: false,
       message: error.message
     });
   }
-
 });
 
 // *****VISUALIZAR UN ARCHIVO*****
 FileRouter.get("/findFiles/:fileId", auth, async (req, res) => {
+  const { fileId } = req.params;
   try {
-    const results = await pool.query(`
-      SELECT f.*, e.name as event_name, u.name as user_name 
-      FROM files f 
-      LEFT JOIN events e ON f.event_id = e.event_id 
-      LEFT JOIN users u ON f.user_id = u.user_id 
-      WHERE f.file_id = $1
-    `, [fileId]);
+    const results = await pool.query(`SELECT * from files WHERE file_id = $1`, [fileId]);
     const file = results.rows[0];
 
     if (!file) {
@@ -74,8 +59,10 @@ FileRouter.get("/findFiles/:fileId", auth, async (req, res) => {
         message: "Archivo no encontrado"
       });
     }
+
     return res.status(200).json({
       success: true,
+      message: "Imágen encontrada",
       file
     });
   } catch (error) {
@@ -88,10 +75,11 @@ FileRouter.get("/findFiles/:fileId", auth, async (req, res) => {
 
 // *****CREAMOS NUEVO ARCHIVO*****
 FileRouter.post("/newFile", auth, async (req, res) => {
-  try {
-    const { id } = req.user;
-    const { fileName, description, date, event } = req.body;
 
+  const { id } = req.user;
+  const { fileName, description, date, event } = req.body;
+
+  try {
     // Validaciones mejoradas
     if (!req.files?.file) {
       return res.status(400).json({
@@ -115,28 +103,32 @@ FileRouter.post("/newFile", auth, async (req, res) => {
       newImage = await cloudinary.v2.uploader.upload(fileUpload.tempFilePath, {
         folder: "filesUpload"
       });
+      console.log("Imagen subida a Cloudinary:", newImage);
     } catch (uploadError) {
+      console.log("Error al subir a Cloudinary:", newImage);
       throw new Error(`Error al subir a Cloudinary: ${uploadError.message}`);
+
     } finally {
       await removeTmp(fileUpload.tempFilePath);
     }
 
     // Insertar en base de datos
     const fileImg = await pool.query(
-      "INSERT INTO files (file_name, description, date, image, user_id, event_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      "INSERT INTO files (file_name, description, date, public_id, url, user_id, event_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
       [
         fileName,
         description || null,
         date,
-        JSON.stringify({ public_id: newImage.public_id, url: newImage.secure_url }),
+        newImage.public_id,
+        newImage.secure_url,
         id,
         event
       ]
     );
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      message: "Archivo subido correctamente",
+      message: "Datos del archivo subido correctamente a la BBDD",
       file: fileImg.rows[0]
     });
 

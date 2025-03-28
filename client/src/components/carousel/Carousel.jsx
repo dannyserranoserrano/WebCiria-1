@@ -17,7 +17,7 @@ const Carousel = () => {
                 setFiles(response.data.files || []);
             } catch (error) {
                 console.error('Error fetching files:', error);
-                setError('Error loading images');
+                setError('Error al cargar las imágenes');
                 setFiles([]);
             }
         }
@@ -38,13 +38,13 @@ const Carousel = () => {
                                  onError={(e) => {e.target.src = './images/fallback-image.jpg'}} />
                         </div>
                     </div>
-                    {Array.isArray(files) && files.map(e => (
-                        <div key={e._id || Math.random()} className="carousel-item">
+                    {Array.isArray(files) && files.map(file => (
+                        <div key={file.file_id} className="carousel-item">
                             <div className="carousel-image-container">
                                 <img 
-                                    src={e?.image?.url || './images/fallback-image.jpg'} 
+                                    src={file.url || './images/fallback-image.jpg'} 
                                     className="d-block w-100" 
-                                    alt={e?.fileName || 'Image'} 
+                                    alt={file.filename || 'Image'} 
                                     onError={(e) => {e.target.src = './images/fallback-image.jpg'}}
                                 />
                             </div>

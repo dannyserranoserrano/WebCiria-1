@@ -159,7 +159,7 @@ const Header = () => {
                   GALERÍA
                 </Link>
               </li>
-              <li className="nav-item" style={{ display: role ? "block" : "none" }}>
+              <li className="nav-item">
                 <Link
                   className="nav-link active"
                   aria-current="page"
